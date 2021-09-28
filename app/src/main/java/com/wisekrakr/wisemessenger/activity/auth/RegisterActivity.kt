@@ -57,7 +57,6 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
     }
 
     override fun supportBar() {
-
         actionBar?.hide()
     }
 

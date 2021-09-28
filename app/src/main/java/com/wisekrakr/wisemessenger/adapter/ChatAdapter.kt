@@ -72,8 +72,7 @@ internal class ChatAdapter : RecyclerView.Adapter<ChatViewHolder<*>>(){
 
     override fun onBindViewHolder(holder: ChatViewHolder<*>, position: Int) {
         val item = messages[position]
-        Log.d(TAG, "$position ${item.message} has color ${item.textColor}")
-        
+
         when (holder) {
             is ChatMeViewHolder -> holder.bind(item, context)
             is ChatOtherViewHolder -> holder.bind(item, context)

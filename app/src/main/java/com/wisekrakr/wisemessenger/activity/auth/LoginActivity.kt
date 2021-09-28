@@ -37,6 +37,11 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
             startActivity(Intent(this, RegisterActivity::class.java))
             finish()
         }
+
+        binding.btnLoginPhone.setOnClickListener {
+            startActivity(Intent(this, LoginMobileActivity::class.java))
+            finish()
+        }
     }
 
     override fun supportBar() {

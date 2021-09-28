@@ -18,7 +18,9 @@ import com.wisekrakr.wisemessenger.activity.actions.CreateGroupActivity
 import com.wisekrakr.wisemessenger.activity.chat.GroupChatActivity
 import com.wisekrakr.wisemessenger.adapter.GroupsAdapter
 import com.wisekrakr.wisemessenger.databinding.FragmentGroupsBinding
+import com.wisekrakr.wisemessenger.model.ChatRoom
 import com.wisekrakr.wisemessenger.model.Group
+import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.getChatRoom
 import com.wisekrakr.wisemessenger.repository.GroupRepository.getGroupsUser
 import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
 import kotlinx.coroutines.launch
@@ -29,10 +31,9 @@ class GroupsFragment : BaseFragment<FragmentGroupsBinding>() {
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentGroupsBinding =
         FragmentGroupsBinding::inflate
 
-    private lateinit var alertDialog: AlertDialog
-
     private lateinit var groupsAdapter: GroupsAdapter
 
+    private lateinit var chatRoom: ChatRoom
     private var arrayGroups = ArrayList<Group>()
 
 
@@ -51,52 +52,10 @@ class GroupsFragment : BaseFragment<FragmentGroupsBinding>() {
         groupsAdapter.setClickListener(onGroupClick)
     }
 
-
-
     companion object {
         const val GROUP_KEY = "group"
+        const val CHAT_ROOM_KEY = "chat_room"
     }
-
-//    private fun onShowCreateGroupDialog() {
-//
-//        launch {
-//            val builder = AlertDialog.Builder(requireContext())
-//
-//            alertDialog = builder.create()
-//
-//            alertDialog.setTitle("Enter Group Name: ")
-//
-//            val groupNameField = EditText(requireContext())
-//            groupNameField.hint = "e.g. The Revengers"
-//
-//            // here we must create a list of users
-//            // add them to arrayContacts when box is checked
-//            dialogCreateGroupAdapter.setData(contactAdapter.getData())
-//
-//            alertDialog.setView(groupNameField)
-//            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE,
-//                "Create",
-//                DialogInterface.OnClickListener { dialog, which ->
-//                    val groupName = groupNameField.text.trim().toString()
-//
-//                    if (groupName.isEmpty()) return@OnClickListener
-//
-//                    onCreateGroup(groupName)
-//
-//                })
-//
-//            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel") { dialog, which ->
-//                dialog.cancel()
-//            }
-//
-//            builder.setAdapter(dialogCreateGroupAdapter) { dialog, which -> }
-//
-//            alertDialog.show()
-//        }
-//
-//
-//    }
-
 
     private fun onShowGroups() {
         launch {
@@ -148,6 +107,7 @@ class GroupsFragment : BaseFragment<FragmentGroupsBinding>() {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             val g = snapshot.getValue(Group::class.java)
 
+
                             if (g?.uid == group.uid) {
                                 startChatting(g)
                             }
@@ -163,9 +123,23 @@ class GroupsFragment : BaseFragment<FragmentGroupsBinding>() {
     }
 
     private fun startChatting(group: Group) {
-        val intent = Intent(requireContext(), GroupChatActivity::class.java)
-            .putExtra(GROUP_KEY, group)
-        startActivity(intent)
-        activity?.finish()
+        launch {
+            getChatRoom(group.chatRoomUid)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        chatRoom = snapshot.getValue(ChatRoom::class.java)!!
+                        val intent = Intent(requireContext(), GroupChatActivity::class.java)
+                            .putExtra(GROUP_KEY, group)
+                            .putExtra(CHAT_ROOM_KEY, chatRoom)
+                        startActivity(intent)
+                        activity?.finish()
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                    }
+                })
+        }
+
+
     }
 }

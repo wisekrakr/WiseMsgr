@@ -87,8 +87,6 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
         profileMap["username"] = username.toString()
         profileMap["status"] = status.toString()
 
-//        updateFirebaseUser(username.toString(), profileMap["avatarUrl"])
-
         updateProfileUser(this, profileMap)
 
     }
@@ -142,6 +140,7 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
 
                 // handle the image/avatar
                 selectedAvatar = data!!.data
+
 
                 val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedAvatar)
 

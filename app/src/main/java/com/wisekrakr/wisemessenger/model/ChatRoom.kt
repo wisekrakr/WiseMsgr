@@ -9,7 +9,7 @@ data class ChatRoom(
 ) :
     Serializable {
     var uid: String = ""
-    var messages: MutableList<ChatMessage> = mutableListOf()
+    var messages: HashMap<String,ChatMessage> = hashMapOf()
 
     constructor() : this(mutableListOf())
 }

@@ -5,6 +5,8 @@ import android.content.Intent
 import android.util.Log
 import android.widget.ImageView
 import com.squareup.picasso.Picasso
+import com.theartofdev.edmodo.cropper.CropImage
+import com.theartofdev.edmodo.cropper.CropImageView
 import com.wisekrakr.wisemessenger.activity.HomeActivity
 import com.wisekrakr.wisemessenger.activity.auth.RegisterActivity
 import com.wisekrakr.wisemessenger.activity.StartActivity
@@ -40,6 +42,13 @@ object Actions {
     object ImageActions{
         fun loadImage(imageUrl: String?, target: ImageView){
             Picasso.get().load(imageUrl).into(target)
+        }
+
+        fun Activity.cropImage(){
+            CropImage.activity()
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1, 1)
+                .start(this)
         }
     }
 }

@@ -3,6 +3,8 @@
     package="com.wisekrakr.wisemessenger">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:allowBackup="true"
@@ -11,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WiseMessenger">
+        <activity android:name=".activity.auth.LoginMobileActivity"></activity>
         <activity android:name=".activity.actions.CreateGroupActivity" />
         <activity android:name=".activity.chat.GroupChatActivity" />
         <activity android:name=".activity.SettingsActivity" />
