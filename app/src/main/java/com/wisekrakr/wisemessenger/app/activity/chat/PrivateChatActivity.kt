@@ -1,37 +1,9 @@
-package com.wisekrakr.wisemessenger.activity.chat
+package com.wisekrakr.wisemessenger.app.activity.chat
 
-import android.annotation.SuppressLint
-import android.app.ActionBar
-import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
-import android.widget.ImageView
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.activity.BaseActivity
+import com.wisekrakr.wisemessenger.app.activity.BaseActivity
 
-import com.wisekrakr.wisemessenger.adapter.ChatAdapter
 import com.wisekrakr.wisemessenger.databinding.ActivityPrivateChatBinding
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
-import com.wisekrakr.wisemessenger.fragments.ContactsFragment.Companion.CHAT_ROOM_KEY
-import com.wisekrakr.wisemessenger.fragments.ContactsFragment.Companion.CONTACT_KEY
-import com.wisekrakr.wisemessenger.model.ChatMessage
-import com.wisekrakr.wisemessenger.model.ChatRoom
-import com.wisekrakr.wisemessenger.model.User
-import com.wisekrakr.wisemessenger.model.nondata.Conversationalist
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.addMessagesToChatRoom
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.getChatRoom
-import com.wisekrakr.wisemessenger.utils.Actions
-import com.wisekrakr.wisemessenger.utils.Constants
-import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
-import de.hdodenhof.circleimageview.CircleImageView
-import kotlinx.coroutines.launch
 
 
 class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {

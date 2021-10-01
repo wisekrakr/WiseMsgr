@@ -14,15 +14,19 @@ import com.wisekrakr.wisemessenger.model.User
 import com.wisekrakr.wisemessenger.utils.Actions.ImageActions.loadImage
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 
-class ContactsAdapter(private val layoutItem: Int) : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>(){
+class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>(){
 
     private var listener: OnItemClickListener? = null
     private var context: Context? = null
     private var contacts = ArrayList<User>()
 
+
     class ContactsViewHolder(view: View) : RecyclerView.ViewHolder(view)  {
+
         val name: TextView = view.findViewById(R.id.tv_contact_name)
+        val status: TextView = view.findViewById(R.id.tv_status)
         val avatar: ImageView = view.findViewById(R.id.img_contact_avatar)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactsViewHolder {
@@ -48,6 +52,7 @@ class ContactsAdapter(private val layoutItem: Int) : RecyclerView.Adapter<Contac
     override fun onBindViewHolder(holder: ContactsViewHolder, position: Int) {
 
         holder.name.text = contacts[position].username
+        holder.status.text = contacts[position].status
         loadImage(contacts[position].avatarUrl, holder.avatar)
 
         Log.d(TAG, " Contact shown: " + contacts[position].username)
@@ -58,7 +63,7 @@ class ContactsAdapter(private val layoutItem: Int) : RecyclerView.Adapter<Contac
     }
 
     override fun getItemViewType(position: Int): Int {
-        return layoutItem
+        return R.layout.contact_item
     }
 
     override fun getItemCount(): Int {

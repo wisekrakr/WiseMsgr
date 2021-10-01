@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.activity.auth
+package com.wisekrakr.wisemessenger.app.activity.auth
 
 import android.content.Intent
 import android.util.Log
@@ -8,14 +8,14 @@ import android.widget.EditText
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.wisekrakr.wisemessenger.activity.BaseActivity
-import com.wisekrakr.wisemessenger.activity.HomeActivity
+import com.wisekrakr.wisemessenger.app.activity.BaseActivity
+import com.wisekrakr.wisemessenger.app.activity.HomeActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityRegisterBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.updateFirebaseUser
 import com.wisekrakr.wisemessenger.model.User
 import com.wisekrakr.wisemessenger.repository.UserRepository.saveUser
-import com.wisekrakr.wisemessenger.utils.Actions.ClassActions.returnToActivityWithFlags
+import com.wisekrakr.wisemessenger.utils.Actions.IntentActions.returnToActivityWithFlags
 import com.wisekrakr.wisemessenger.utils.Extensions
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.isNotEmpty

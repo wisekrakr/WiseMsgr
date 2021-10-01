@@ -1,14 +1,22 @@
-package com.wisekrakr.wisemessenger.activity
+package com.wisekrakr.wisemessenger.app.activity
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.wisekrakr.wisemessenger.R
+import com.wisekrakr.wisemessenger.adapter.ContactsAdapter
+import com.wisekrakr.wisemessenger.app.activity.actions.SearchActivity
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
+import com.wisekrakr.wisemessenger.model.User
+import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -58,7 +66,7 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineSc
                 finish()
             }
             R.id.nav_find_contacts -> {
-
+                startActivity(Intent(this, SearchActivity::class.java))
             }
             R.id.nav_settings -> {
                 startActivity(Intent(this, SettingsActivity::class.java))

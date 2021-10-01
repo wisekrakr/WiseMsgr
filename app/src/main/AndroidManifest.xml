@@ -3,8 +3,8 @@
     package="com.wisekrakr.wisemessenger">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -13,25 +13,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WiseMessenger">
-        <activity android:name=".activity.auth.LoginMobileActivity"></activity>
-        <activity android:name=".activity.actions.CreateGroupActivity" />
-        <activity android:name=".activity.chat.GroupChatActivity" />
-        <activity android:name=".activity.SettingsActivity" />
-        <activity android:name=".activity.chat.PrivateChatActivity">
+        <activity android:name="com.wisekrakr.wisemessenger.app.activity.actions.SearchActivity"></activity>
+        <activity android:name="com.wisekrakr.wisemessenger.app.activity.auth.LoginMobileActivity" />
+        <activity android:name="com.wisekrakr.wisemessenger.app.activity.actions.CreateGroupActivity" />
+        <activity android:name="com.wisekrakr.wisemessenger.app.activity.chat.GroupChatActivity" />
+        <activity android:name="com.wisekrakr.wisemessenger.app.activity.SettingsActivity" />
+        <activity android:name="com.wisekrakr.wisemessenger.app.activity.chat.PrivateChatActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.HomeActivity" />
+                android:value="com.wisekrakr.wisemessenger.app.activity.HomeActivity" />
         </activity>
-        <activity android:name=".activity.auth.LoginActivity" />
-        <activity android:name=".activity.auth.RegisterActivity" />
-        <activity android:name=".activity.StartActivity">
+        <activity android:name="com.wisekrakr.wisemessenger.app.activity.auth.LoginActivity" />
+        <activity android:name="com.wisekrakr.wisemessenger.app.activity.auth.RegisterActivity" />
+        <activity android:name="com.wisekrakr.wisemessenger.app.activity.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- HOME -->
-        <activity android:name=".activity.HomeActivity">
+        <activity android:name="com.wisekrakr.wisemessenger.app.activity.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

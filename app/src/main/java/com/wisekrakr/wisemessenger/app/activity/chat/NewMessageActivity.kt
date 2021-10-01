@@ -1,23 +1,4 @@
-package com.wisekrakr.wisemessenger.activity.chat
-
-import android.content.Intent
-import android.util.Log
-import android.view.LayoutInflater
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.wisekrakr.wisemessenger.activity.BaseActivity
-import com.wisekrakr.wisemessenger.activity.HomeActivity
-import com.wisekrakr.wisemessenger.adapter.ContactsAdapter
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
-import com.wisekrakr.wisemessenger.model.ChatRoom
-import com.wisekrakr.wisemessenger.model.User
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.createChatRoom
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.getChatRoom
-import com.wisekrakr.wisemessenger.repository.UserRepository.getUsers
-import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
-import kotlinx.coroutines.launch
+package com.wisekrakr.wisemessenger.app.activity.chat
 
 //class NewMessageActivity : BaseActivity<ActivityNewMessageBinding>() {
 //

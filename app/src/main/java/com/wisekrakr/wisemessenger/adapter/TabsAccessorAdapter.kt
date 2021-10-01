@@ -5,14 +5,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.wisekrakr.wisemessenger.fragments.ContactsFragment
-import com.wisekrakr.wisemessenger.fragments.GroupsFragment
-import com.wisekrakr.wisemessenger.fragments.PrivateChatFragment
+import com.wisekrakr.wisemessenger.app.fragments.ContactsFragment
+import com.wisekrakr.wisemessenger.app.fragments.GroupsFragment
+import com.wisekrakr.wisemessenger.app.fragments.PrivateChatFragment
 
 class TabsAccessorAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
-
     FragmentStateAdapter(fragmentManager, lifecycle) {
-
 
 
     override fun getItemCount(): Int {

@@ -1,14 +1,11 @@
-package com.wisekrakr.wisemessenger.activity
+package com.wisekrakr.wisemessenger.app.activity
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import com.google.firebase.auth.FirebaseUser
-import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.activity.auth.LoginActivity
-import com.wisekrakr.wisemessenger.activity.auth.RegisterActivity
+import com.wisekrakr.wisemessenger.app.activity.auth.LoginActivity
+import com.wisekrakr.wisemessenger.app.activity.auth.RegisterActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityStartBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast

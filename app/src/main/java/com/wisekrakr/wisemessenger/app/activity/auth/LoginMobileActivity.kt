@@ -1,8 +1,6 @@
-package com.wisekrakr.wisemessenger.activity.auth
+package com.wisekrakr.wisemessenger.app.activity.auth
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -10,17 +8,13 @@ import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
 import android.widget.EditText
 import com.google.firebase.FirebaseException
-import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.wisekrakr.wisemessenger.activity.BaseActivity
-import com.wisekrakr.wisemessenger.activity.HomeActivity
+import com.wisekrakr.wisemessenger.app.activity.BaseActivity
+import com.wisekrakr.wisemessenger.app.activity.HomeActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityLoginMobileBinding
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
-import com.wisekrakr.wisemessenger.utils.Actions.ClassActions.returnToActivityWithFlags
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.isNotEmpty
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast

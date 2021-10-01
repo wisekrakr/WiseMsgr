@@ -1,22 +1,22 @@
-package com.wisekrakr.wisemessenger.fragments
+package com.wisekrakr.wisemessenger.app.fragments
 
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.wisekrakr.wisemessenger.activity.HomeActivity.Companion.currentUser
-import com.wisekrakr.wisemessenger.activity.actions.CreateGroupActivity
-import com.wisekrakr.wisemessenger.activity.chat.GroupChatActivity
+import com.wisekrakr.wisemessenger.app.activity.HomeActivity.Companion.currentUser
+import com.wisekrakr.wisemessenger.app.activity.actions.CreateGroupActivity
+import com.wisekrakr.wisemessenger.app.activity.chat.GroupChatActivity
 import com.wisekrakr.wisemessenger.adapter.GroupsAdapter
+import com.wisekrakr.wisemessenger.app.EventManager
+import com.wisekrakr.wisemessenger.app.RecyclerViewDataSetup
+import com.wisekrakr.wisemessenger.app.activity.HomeActivity
 import com.wisekrakr.wisemessenger.databinding.FragmentGroupsBinding
 import com.wisekrakr.wisemessenger.model.ChatRoom
 import com.wisekrakr.wisemessenger.model.Group
@@ -35,7 +35,6 @@ class GroupsFragment : BaseFragment<FragmentGroupsBinding>() {
 
     private lateinit var chatRoom: ChatRoom
     private var arrayGroups = ArrayList<Group>()
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,39 +59,23 @@ class GroupsFragment : BaseFragment<FragmentGroupsBinding>() {
     private fun onShowGroups() {
         launch {
 
-            getGroupsUser(currentUser!!.uid).addListenerForSingleValueEvent(object :
-                ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    snapshot.children.forEach {
-                        val group = it.getValue(Group::class.java)!!
-
-                        if (group.groupName.isNotEmpty()) {
-                            Log.d(FRAGMENT_TAG, "Group added to array ${group.groupName}")
-                            arrayGroups.add(group)
-                            groupsAdapter.notifyDataSetChanged()
-
-                        }
-                    }
-
-                    groupsAdapter.setData(arrayGroups)
-
-                    viewBinding.tvNumberOfContactsGroups.text = arrayGroups.size.toString()
-
-                    viewBinding.recyclerViewGroups.layoutManager = LinearLayoutManager(
-                        requireContext(),
-                        LinearLayoutManager.VERTICAL,
-                        false
+            EventManager.getAllGroupsOfCurrentUser(
+                currentUser!!,
+                arrayGroups,
+                groupsAdapter,
+                viewBinding.recyclerViewGroups,
+                requireContext()
+            ) {
+                RecyclerViewDataSetup
+                    .groups(
+                        groupsAdapter,
+                        arrayGroups,
+                        viewBinding.recyclerViewGroups,
+                        requireContext()
                     )
-                    viewBinding.recyclerViewGroups.setHasFixedSize(true)
-                    viewBinding.recyclerViewGroups.adapter = groupsAdapter
-                }
 
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e(FRAGMENT_TAG, error.message)
-
-                }
-
-            })
+                viewBinding.tvNumberOfContactsGroups.text = arrayGroups.size.toString()
+            }
         }
     }
 

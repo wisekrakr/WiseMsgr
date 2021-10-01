@@ -14,7 +14,7 @@ import com.wisekrakr.wisemessenger.model.Group
 import com.wisekrakr.wisemessenger.utils.Actions.ImageActions.loadImage
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 
-internal class GroupsAdapter : RecyclerView.Adapter<GroupsAdapter.GroupsViewHolder>(){
+class GroupsAdapter : RecyclerView.Adapter<GroupsAdapter.GroupsViewHolder>(){
 
     private var listener: OnItemClickListener? = null
     private var context: Context? = null

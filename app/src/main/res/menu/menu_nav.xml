@@ -8,7 +8,7 @@
         app:showAsAction="never"/>
 
     <item android:id="@+id/nav_settings"
-        android:title="Settings"
+        android:title="Profile Settings"
         app:showAsAction="never"
         />
 

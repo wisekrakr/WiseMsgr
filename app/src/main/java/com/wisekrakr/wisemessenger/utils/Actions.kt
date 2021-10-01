@@ -7,13 +7,14 @@ import android.widget.ImageView
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
-import com.wisekrakr.wisemessenger.activity.HomeActivity
-import com.wisekrakr.wisemessenger.activity.auth.RegisterActivity
-import com.wisekrakr.wisemessenger.activity.StartActivity
+import com.wisekrakr.wisemessenger.R
+import com.wisekrakr.wisemessenger.app.activity.HomeActivity
+import com.wisekrakr.wisemessenger.app.activity.auth.RegisterActivity
+import com.wisekrakr.wisemessenger.app.activity.StartActivity
 
 object Actions {
 
-    object ClassActions{
+    object IntentActions {
         /**
          *  Starts a new Activity with flags on the intent: FLAG_ACTIVITY_CLEAR_TASK or FLAG_ACTIVITY_NEW_TASK
          *  If back button on device get pushed, desktop of the device is shown and not the last activity
@@ -21,14 +22,14 @@ object Actions {
         fun Activity.returnToActivityWithFlags(activityTag: String) {
             var intent: Intent? = null
             Log.d("Actions", "Returning to Activity: $activityTag")
-            when(activityTag){
-                "HomeActivity" ->{
+            when (activityTag) {
+                "HomeActivity" -> {
                     intent = Intent(this, HomeActivity::class.java)
                 }
-                "StartActivity" ->{
+                "StartActivity" -> {
                     intent = Intent(this, StartActivity::class.java)
                 }
-                "RegisterActivity" ->{
+                "RegisterActivity" -> {
                     intent = Intent(this, RegisterActivity::class.java)
                 }
             }
@@ -39,16 +40,21 @@ object Actions {
         }
     }
 
-    object ImageActions{
-        fun loadImage(imageUrl: String?, target: ImageView){
-            Picasso.get().load(imageUrl).into(target)
+    object ImageActions {
+        fun loadImage(imageUrl: String?, target: ImageView) {
+            Picasso.get()
+                .load(imageUrl)
+                .placeholder(R.drawable.avatar)
+                .into(target)
         }
 
-        fun Activity.cropImage(){
+        fun Activity.cropImage() {
             CropImage.activity()
                 .setGuidelines(CropImageView.Guidelines.ON)
                 .setAspectRatio(1, 1)
                 .start(this)
         }
     }
+
+
 }

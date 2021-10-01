@@ -13,4 +13,6 @@
     <color name="variantColor">#F31636</color>
     <color name="variantColor2">#9F0219</color>
     <color name="bgColor">#2196F3</color>
+    <color name="green">#36F321</color>
+    <color name="red">#F4030B</color>
 </resources>

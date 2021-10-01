@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.activity
+package com.wisekrakr.wisemessenger.app.activity
 
 import android.app.Activity
 import android.content.Intent
@@ -7,13 +7,11 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MenuItem
 import androidx.activity.result.contract.ActivityResultContracts
-import com.wisekrakr.wisemessenger.activity.HomeActivity.Companion.currentUser
+import com.wisekrakr.wisemessenger.app.activity.HomeActivity.Companion.currentUser
 import com.wisekrakr.wisemessenger.databinding.ActivitySettingsBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.updateProfileUser
-import com.wisekrakr.wisemessenger.utils.Actions
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import kotlinx.coroutines.launch
 import java.util.*

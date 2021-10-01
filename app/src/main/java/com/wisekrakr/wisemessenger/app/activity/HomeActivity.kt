@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.activity
+package com.wisekrakr.wisemessenger.app.activity
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,7 +16,7 @@ import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.updateFirebaseUser
 import com.wisekrakr.wisemessenger.model.User
 import com.wisekrakr.wisemessenger.repository.UserRepository.getCurrentUser
-import com.wisekrakr.wisemessenger.utils.Actions.ClassActions.returnToActivityWithFlags
+import com.wisekrakr.wisemessenger.utils.Actions.IntentActions.returnToActivityWithFlags
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import kotlinx.coroutines.launch
@@ -24,20 +24,21 @@ import kotlinx.coroutines.launch
 class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
     private lateinit var tabsAccessorAdapter: TabsAccessorAdapter
+    private val contacts: ArrayList<User> = arrayListOf()
 
-    companion object{
-        var currentUser : User? = null
+    companion object {
+        var currentUser: User? = null
     }
 
-    override val bindingInflater: (LayoutInflater) -> ActivityHomeBinding
-        = ActivityHomeBinding::inflate
+    override val bindingInflater: (LayoutInflater) -> ActivityHomeBinding =
+        ActivityHomeBinding::inflate
 
     override fun setup() {
         val user: FirebaseUser? = firebaseAuth.currentUser
 
-        if(user?.uid == null){
+        if (user?.uid == null) {
             returnToActivityWithFlags(StartActivity::class.simpleName.toString())
-        }else{
+        } else {
             getCurrentUser(user)
         }
     }
@@ -46,14 +47,15 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
         onCreateTabLayout()
     }
 
-    private fun getCurrentUser(user: FirebaseUser){
+    private fun getCurrentUser(user: FirebaseUser) {
         launch {
             this.let {
-                getCurrentUser(user.uid).addListenerForSingleValueEvent(object: ValueEventListener{
+                getCurrentUser(user.uid).addListenerForSingleValueEvent(object :
+                    ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         currentUser = snapshot.getValue(User::class.java)
 
-                        if(currentUser != null){
+                        if (currentUser != null) {
                             updateFirebaseUser(currentUser!!.username)
                             makeToast("Welcome Back ${currentUser!!.username}")
 
@@ -65,13 +67,14 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
                     override fun onCancelled(error: DatabaseError) {
                         Log.e(ACTIVITY_TAG, error.message)
                     }
-
                 })
             }
         }
     }
 
-    private fun onCreateTabLayout(){
+
+
+    private fun onCreateTabLayout() {
 
         tabsAccessorAdapter = TabsAccessorAdapter(supportFragmentManager, lifecycle)
 
@@ -85,18 +88,18 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
 
-            when(position){
-                0->{
+            when (position) {
+                0 -> {
                     tab
                         .setText("Contacts")
                         .setIcon(R.drawable.icon_contacts)
                 }
-                1->{
+                1 -> {
                     tab
                         .setText("Chat")
                         .setIcon(R.drawable.icon_private_chat)
                 }
-                2->{
+                2 -> {
                     tab
                         .setText("Groups")
                         .setIcon(R.drawable.icon_group_chat)
@@ -105,8 +108,4 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
         }.attach()
     }
-
-
-
-
 }

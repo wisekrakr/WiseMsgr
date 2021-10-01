@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.activity.chat
+package com.wisekrakr.wisemessenger.app.activity.chat
 
 import android.annotation.SuppressLint
 import android.app.ActionBar
@@ -7,17 +7,15 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
-import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.activity.BaseActivity
+import com.wisekrakr.wisemessenger.app.activity.BaseActivity
 import com.wisekrakr.wisemessenger.adapter.ChatAdapter
 import com.wisekrakr.wisemessenger.databinding.ActivityGroupChatBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
-import com.wisekrakr.wisemessenger.fragments.GroupsFragment
+import com.wisekrakr.wisemessenger.app.fragments.GroupsFragment
 import com.wisekrakr.wisemessenger.model.ChatMessage
 import com.wisekrakr.wisemessenger.model.ChatRoom
 import com.wisekrakr.wisemessenger.model.Group
@@ -166,7 +164,6 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
             binding.recyclerViewGroupChat.adapter = chatAdapter
 
             binding.recyclerViewGroupChat.scrollToPosition(chatAdapter.itemCount-1)
-            chatAdapter.notifyDataSetChanged()
 
         }
 
