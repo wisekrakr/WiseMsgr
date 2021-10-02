@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
     private lateinit var tabsAccessorAdapter: TabsAccessorAdapter
-    private val contacts: ArrayList<User> = arrayListOf()
 
     companion object {
         var currentUser: User? = null

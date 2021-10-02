@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.app.activity
+package com.wisekrakr.wisemessenger.app.activity.profile
 
 import android.app.Activity
 import android.content.Intent
@@ -8,8 +8,9 @@ import android.text.Editable
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.activity.result.contract.ActivityResultContracts
+import com.wisekrakr.wisemessenger.app.activity.BaseActivity
 import com.wisekrakr.wisemessenger.app.activity.HomeActivity.Companion.currentUser
-import com.wisekrakr.wisemessenger.databinding.ActivitySettingsBinding
+import com.wisekrakr.wisemessenger.databinding.ActivityProfileSettingsBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.updateProfileUser
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
@@ -17,10 +18,10 @@ import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.HashMap
 
-class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
+class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
 
-    override val bindingInflater: (LayoutInflater) -> ActivitySettingsBinding =
-        ActivitySettingsBinding::inflate
+    override val bindingInflater: (LayoutInflater) -> ActivityProfileSettingsBinding =
+        ActivityProfileSettingsBinding::inflate
 
     private var selectedAvatar: Uri? = null
 

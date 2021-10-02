@@ -1,0 +1,82 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".app.activity.profile.ProfileActivity">
+
+
+    <ImageView
+        android:id="@+id/img_banner_profile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/profile_banner" />
+
+    <ImageView
+        android:id="@+id/img_avatar_profile"
+        android:layout_width="242dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="150dp"
+        app:layout_constraintEnd_toEndOf="@+id/img_banner_profile"
+        app:layout_constraintStart_toStartOf="@+id/img_banner_profile"
+        app:layout_constraintTop_toTopOf="@+id/img_banner_profile"
+        app:srcCompat="@drawable/avatar" />
+
+    <TextView
+        android:id="@+id/tv_username_profile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Username"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textColor="@color/black"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/img_avatar_profile"
+        app:layout_constraintStart_toStartOf="@+id/img_avatar_profile"
+        app:layout_constraintTop_toBottomOf="@+id/img_avatar_profile" />
+
+    <TextView
+        android:id="@+id/tv_status_profile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Hello, this is my status for today!"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="@+id/tv_username_profile"
+        app:layout_constraintStart_toStartOf="@+id/tv_username_profile"
+        app:layout_constraintTop_toBottomOf="@+id/tv_username_profile" />
+
+    <Button
+        android:id="@+id/btn_sendRequest_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_button"
+        android:text="Send Invite"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tv_status_profile"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="@+id/tv_status_profile"
+        app:layout_constraintTop_toBottomOf="@+id/tv_status_profile"
+        app:layout_constraintVertical_bias="0.33" />
+
+    <Button
+        android:id="@+id/btn_cancelRequest_profile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/rounded_button"
+        android:text="Cancel Invite"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/tv_status_profile"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="@+id/tv_status_profile"
+        app:layout_constraintTop_toBottomOf="@+id/tv_status_profile"
+        app:layout_constraintVertical_bias="0.33" />
+</androidx.constraintlayout.widget.ConstraintLayout>
