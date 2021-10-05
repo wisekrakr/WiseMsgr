@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.app.fragments
+package com.wisekrakr.wisemessenger.components.fragments
 
 import android.os.Bundle
 import android.view.View

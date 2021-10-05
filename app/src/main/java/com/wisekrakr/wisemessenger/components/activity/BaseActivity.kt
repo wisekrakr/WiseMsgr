@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.app.activity
+package com.wisekrakr.wisemessenger.components.activity
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,12 +8,14 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
 import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.app.activity.actions.SearchActivity
-import com.wisekrakr.wisemessenger.app.activity.profile.ProfileSettingsActivity
+import com.wisekrakr.wisemessenger.components.activity.actions.SearchActivity
+import com.wisekrakr.wisemessenger.components.activity.chat.ChatRequestsActivity
+import com.wisekrakr.wisemessenger.components.activity.profile.ProfileSettingsActivity
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 
 abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineScope {
 
@@ -28,7 +30,6 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineSc
         super.onCreate(savedInstanceState)
         viewBinding = bindingInflater.invoke(layoutInflater)
         setContentView(requireNotNull(viewBinding).root)
-
         setup()
         supportBar()
     }
@@ -61,6 +62,9 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineSc
             }
             R.id.nav_find_contacts -> {
                 startActivity(Intent(this, SearchActivity::class.java))
+            }
+            R.id.nav_requests -> {
+                startActivity(Intent(this, ChatRequestsActivity::class.java))
             }
             R.id.nav_settings -> {
                 startActivity(Intent(this, ProfileSettingsActivity::class.java))

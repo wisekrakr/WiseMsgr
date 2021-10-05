@@ -1,25 +1,23 @@
-package com.wisekrakr.wisemessenger.app.activity.actions
+package com.wisekrakr.wisemessenger.components.activity.actions
 
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
-import com.wisekrakr.wisemessenger.app.activity.BaseActivity
+import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.adapter.ContactsAdapter
-import com.wisekrakr.wisemessenger.app.EventManager
-import com.wisekrakr.wisemessenger.app.RecyclerViewDataSetup
-import com.wisekrakr.wisemessenger.app.activity.profile.ProfileActivity
-import com.wisekrakr.wisemessenger.app.fragments.ContactsFragment
+import com.wisekrakr.wisemessenger.components.EventManager
+import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
+import com.wisekrakr.wisemessenger.components.activity.profile.ProfileActivity
 import com.wisekrakr.wisemessenger.databinding.ActivitySearchBinding
-import com.wisekrakr.wisemessenger.model.User
+import com.wisekrakr.wisemessenger.model.UserProfile
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
-import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
 import kotlinx.coroutines.launch
 
 class SearchActivity : BaseActivity<ActivitySearchBinding>() {
     override val bindingInflater: (LayoutInflater) -> ActivitySearchBinding = ActivitySearchBinding::inflate
 
     private lateinit var contactsAdapter: ContactsAdapter
-    private var contacts: ArrayList<User> = arrayListOf()
+    private var contacts: ArrayList<UserProfile> = arrayListOf()
 
 
     override fun setup() {
@@ -29,31 +27,31 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>() {
         onShowContacts()
 
         contactsAdapter.setClickListener(onSelectContact)
-
     }
 
     companion object {
-        const val CONTACT_KEY = "contact"
+        const val USER_PROFILE_KEY = "userProfile"
     }
 
     private val onSelectContact = object : ContactsAdapter.OnItemClickListener {
-        override fun onClick(contact: User) {
+        override fun onClick(contact: UserProfile) {
             Log.d(ACTIVITY_TAG, "Clicked on: ${contact.username} ")
 
             showProfile(contact)
         }
     }
 
-    private fun showProfile(contact: User) {
+
+    private fun showProfile(userProfile: UserProfile) {
         val intent = Intent(this, ProfileActivity::class.java)
-            .putExtra(CONTACT_KEY, contact)
+            .putExtra(USER_PROFILE_KEY, userProfile)
         startActivity(intent)
         finish()
     }
 
     private fun onShowContacts() {
         launch {
-            EventManager.getAllUsers(contacts) {
+            EventManager.onGetAllUsers(contacts) {
                 RecyclerViewDataSetup.contacts(
                     contactsAdapter,
                     contacts,

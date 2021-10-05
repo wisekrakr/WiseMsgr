@@ -4,29 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".components.fragments.PrivateChatFragment">
+    android:background="@color/bgColor"
+    tools:context=".components.activity.chat.ChatRequestsActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView_private"
+            android:id="@+id/recyclerView_requests"
             android:layout_width="0dp"
             android:layout_height="650dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="24dp"
             android:layout_marginEnd="10dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.75"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_contacts_private" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_requests_requests" />
 
         <TextView
-            android:id="@+id/tv_contacts_private"
+            android:id="@+id/tv_requests_requests"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:text="Conversations"
+            android:text="Chat Requests"
             android:textColor="@color/light_gray"
             android:textSize="18sp"
             android:textStyle="bold"
@@ -36,7 +38,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tv_numberOfContacts_private"
+            android:id="@+id/tv_numberOfRequests_requests"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/rectangular_badge"
@@ -44,10 +46,10 @@
             android:textAlignment="center"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/tv_contacts_private"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_requests_requests"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/tv_contacts_private"
+            app:layout_constraintStart_toEndOf="@+id/tv_requests_requests"
             app:layout_constraintTop_toTopOf="parent" />
 
         <View
@@ -58,7 +60,6 @@
             android:background="@color/primaryColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_contacts_private" />
-
+            app:layout_constraintTop_toBottomOf="@+id/tv_requests_requests" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

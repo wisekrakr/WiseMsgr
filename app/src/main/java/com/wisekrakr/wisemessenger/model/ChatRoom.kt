@@ -6,11 +6,12 @@ import kotlin.collections.ArrayList
 
 data class ChatRoom(
     var participants: MutableList<Conversationalist>,
+    var isPrivate: Boolean
 ) :
     Serializable {
     var uid: String = ""
     var messages: HashMap<String,ChatMessage> = hashMapOf()
 
-    constructor() : this(mutableListOf())
+    constructor() : this(mutableListOf(), false)
 }
 

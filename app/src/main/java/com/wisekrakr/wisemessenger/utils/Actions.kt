@@ -1,6 +1,7 @@
 package com.wisekrakr.wisemessenger.utils
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.ImageView
@@ -8,9 +9,9 @@ import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImage
 import com.theartofdev.edmodo.cropper.CropImageView
 import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.app.activity.HomeActivity
-import com.wisekrakr.wisemessenger.app.activity.auth.RegisterActivity
-import com.wisekrakr.wisemessenger.app.activity.StartActivity
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity
+import com.wisekrakr.wisemessenger.components.activity.auth.RegisterActivity
+import com.wisekrakr.wisemessenger.components.activity.StartActivity
 
 object Actions {
 
@@ -41,11 +42,16 @@ object Actions {
     }
 
     object ImageActions {
-        fun loadImage(imageUrl: String?, target: ImageView) {
-            Picasso.get()
-                .load(imageUrl)
-                .placeholder(R.drawable.avatar)
-                .into(target)
+        fun loadImage(imageUrl: String, target: ImageView) {
+            if(imageUrl.isNotEmpty()){
+//                val picasso = Picasso.get()
+//                picasso.isLoggingEnabled = true
+                Picasso.get()
+                    .load(imageUrl)
+                    .placeholder(R.drawable.avatar)
+                    .into(target)
+
+            }
         }
 
         fun Activity.cropImage() {
@@ -54,6 +60,7 @@ object Actions {
                 .setAspectRatio(1, 1)
                 .start(this)
         }
+
     }
 
 

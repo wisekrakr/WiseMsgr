@@ -7,6 +7,10 @@
         android:id="@+id/nav_find_contacts"
         app:showAsAction="never"/>
 
+    <item android:title="Chat Requests"
+        android:id="@+id/nav_requests"
+        app:showAsAction="never"/>
+
     <item android:id="@+id/nav_settings"
         android:title="Profile Settings"
         app:showAsAction="never"

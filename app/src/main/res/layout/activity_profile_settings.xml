@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".app.activity.profile.ProfileSettingsActivity">
+    tools:context=".components.activity.profile.ProfileSettingsActivity">
 
     <ImageView
         android:id="@+id/img_banner_settings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="250dp"
         android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,7 +56,7 @@
         android:inputType="textMultiLine"
         android:padding="15dp"
         android:textColor="@color/black"
-        android:textColorHint="@color/light_gray"
+        android:textColorHint="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/img_btn_avatar_settings" />
@@ -74,7 +74,7 @@
         android:inputType="textMultiLine"
         android:padding="15dp"
         android:textColor="@color/black"
-        android:textColorHint="@color/light_gray"
+        android:textColorHint="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_username_settings" />

@@ -1,5 +1,6 @@
-package com.wisekrakr.wisemessenger.app.activity
+package com.wisekrakr.wisemessenger.components.activity
 
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.viewpager2.widget.ViewPager2
@@ -11,6 +12,7 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.adapter.TabsAccessorAdapter
+import com.wisekrakr.wisemessenger.components.activity.profile.ProfileSettingsActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityHomeBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.updateFirebaseUser
@@ -56,7 +58,12 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
                         if (currentUser != null) {
                             updateFirebaseUser(currentUser!!.username)
-                            makeToast("Welcome Back ${currentUser!!.username}")
+                            makeToast("Welcome back ${currentUser!!.username}")
+
+                            if(currentUser!!.profileUid.isBlank()){
+                                startActivity(Intent(this@HomeActivity, ProfileSettingsActivity::class.java))
+                                finish()
+                            }
 
                             binding.tvNameHome.text = currentUser!!.username
                         }
@@ -90,13 +97,13 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
             when (position) {
                 0 -> {
                     tab
-                        .setText("Contacts")
-                        .setIcon(R.drawable.icon_contacts)
+                        .setText("Chat")
+                        .setIcon(R.drawable.icon_private_chat)
                 }
                 1 -> {
                     tab
-                        .setText("Chat")
-                        .setIcon(R.drawable.icon_private_chat)
+                        .setText("Contacts")
+                        .setIcon(R.drawable.icon_contacts)
                 }
                 2 -> {
                     tab

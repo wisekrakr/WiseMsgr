@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
-    tools:context=".app.activity.HomeActivity">
+    tools:context=".components.activity.HomeActivity">
 
     <TextView
         android:id="@+id/tv_group_name"

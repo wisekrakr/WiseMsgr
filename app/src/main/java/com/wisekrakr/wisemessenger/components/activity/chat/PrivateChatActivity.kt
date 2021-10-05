@@ -1,7 +1,7 @@
-package com.wisekrakr.wisemessenger.app.activity.chat
+package com.wisekrakr.wisemessenger.components.activity.chat
 
 import android.view.LayoutInflater
-import com.wisekrakr.wisemessenger.app.activity.BaseActivity
+import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 
 import com.wisekrakr.wisemessenger.databinding.ActivityPrivateChatBinding
 

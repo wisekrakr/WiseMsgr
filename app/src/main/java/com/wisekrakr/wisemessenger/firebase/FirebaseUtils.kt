@@ -7,7 +7,7 @@ import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
-import com.wisekrakr.wisemessenger.app.activity.HomeActivity
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.utils.Config.DATABASE_URL
 import com.wisekrakr.wisemessenger.utils.Constants
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
@@ -28,18 +28,5 @@ object FirebaseUtils {
         )
     }
 
-    fun updateProfileUser(activity: Activity, map: HashMap<String,String>){
-        rootReference
-            .child(Constants.REF_USERS)
-            .child(HomeActivity.currentUser!!.uid)
-            .updateChildren(map as Map<String, Any>)
-            .addOnCompleteListener {
-                if(it.isSuccessful){
-                    activity.makeToast("Profile successfully updated!")
-                }
-            }.addOnFailureListener {
-                activity.makeToast("Could not update profile right now.")
-                Log.e(activity.ACTIVITY_TAG, it.message.toString())
-            }
-    }
+
 }

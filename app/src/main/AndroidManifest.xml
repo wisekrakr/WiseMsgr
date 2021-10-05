@@ -13,27 +13,28 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WiseMessenger">
-        <activity android:name=".app.activity.profile.ProfileActivity"></activity>
-        <activity android:name=".app.activity.actions.SearchActivity" />
-        <activity android:name=".app.activity.auth.LoginMobileActivity" />
-        <activity android:name=".app.activity.actions.CreateGroupActivity" />
-        <activity android:name=".app.activity.chat.GroupChatActivity" />
-        <activity android:name=".app.activity.profile.ProfileSettingsActivity" />
-        <activity android:name=".app.activity.chat.PrivateChatActivity">
+        <activity android:name=".components.activity.chat.ChatRequestsActivity"></activity>
+        <activity android:name=".components.activity.profile.ProfileActivity" />
+        <activity android:name=".components.activity.actions.SearchActivity" />
+        <activity android:name=".components.activity.auth.LoginMobileActivity" />
+        <activity android:name=".components.activity.actions.CreateGroupActivity" />
+        <activity android:name=".components.activity.chat.GroupChatActivity" />
+        <activity android:name=".components.activity.profile.ProfileSettingsActivity" />
+        <activity android:name=".components.activity.chat.PrivateChatActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wisekrakr.wisemessenger.app.activity.HomeActivity" />
+                android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />
         </activity>
-        <activity android:name=".app.activity.auth.LoginActivity" />
-        <activity android:name=".app.activity.auth.RegisterActivity" />
-        <activity android:name=".app.activity.StartActivity">
+        <activity android:name=".components.activity.auth.LoginActivity" />
+        <activity android:name=".components.activity.auth.RegisterActivity" />
+        <activity android:name=".components.activity.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- HOME -->
-        <activity android:name=".app.activity.HomeActivity">
+        <activity android:name=".components.activity.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

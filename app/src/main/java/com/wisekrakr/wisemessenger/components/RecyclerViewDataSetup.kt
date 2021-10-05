@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.app
+package com.wisekrakr.wisemessenger.components
 
 import android.content.Context
 import android.util.Log
@@ -8,13 +8,14 @@ import com.wisekrakr.wisemessenger.adapter.ContactsAdapter
 import com.wisekrakr.wisemessenger.adapter.GroupsAdapter
 import com.wisekrakr.wisemessenger.model.Group
 import com.wisekrakr.wisemessenger.model.User
+import com.wisekrakr.wisemessenger.model.UserProfile
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 
 object RecyclerViewDataSetup {
 
     fun contacts(
         contactsAdapter: ContactsAdapter,
-        contacts: ArrayList<User>,
+        contacts: ArrayList<UserProfile>,
         recyclerView: RecyclerView,
         context: Context
     ){
@@ -27,7 +28,6 @@ object RecyclerViewDataSetup {
         )
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = contactsAdapter
-
 
         Log.d(TAG, "Showing contacts.... ")
     }

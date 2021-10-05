@@ -5,23 +5,22 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.model.User
+import com.wisekrakr.wisemessenger.model.UserProfile
 import com.wisekrakr.wisemessenger.utils.Actions.ImageActions.loadImage
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 
-class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>(){
+class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>() {
 
     private var listener: OnItemClickListener? = null
     private var context: Context? = null
-    private var contacts = ArrayList<User>()
+    private var contacts = ArrayList<UserProfile>()
 
 
-    class ContactsViewHolder(view: View) : RecyclerView.ViewHolder(view)  {
+    class ContactsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         val name: TextView = view.findViewById(R.id.tv_contact_name)
         val status: TextView = view.findViewById(R.id.tv_status)
@@ -42,7 +41,7 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>
         )
     }
 
-    fun setData(arrayData: ArrayList<User>) {
+    fun setData(arrayData: ArrayList<UserProfile>) {
         contacts = arrayData
         notifyDataSetChanged()
 
@@ -54,8 +53,6 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>
         holder.name.text = contacts[position].username
         holder.status.text = contacts[position].status
         loadImage(contacts[position].avatarUrl, holder.avatar)
-
-        Log.d(TAG, " Contact shown: " + contacts[position].username)
 
         holder.itemView.rootView.setOnClickListener {
             listener!!.onClick(contacts[position])
@@ -75,7 +72,7 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>
     }
 
     interface OnItemClickListener {
-        fun onClick(contact: User)
+        fun onClick(contact: UserProfile)
     }
 
 }

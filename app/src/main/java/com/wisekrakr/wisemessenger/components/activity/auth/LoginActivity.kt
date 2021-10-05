@@ -1,12 +1,12 @@
-package com.wisekrakr.wisemessenger.app.activity.auth
+package com.wisekrakr.wisemessenger.components.activity.auth
 
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.widget.EditText
-import com.wisekrakr.wisemessenger.app.activity.BaseActivity
-import com.wisekrakr.wisemessenger.app.activity.HomeActivity
+import com.wisekrakr.wisemessenger.components.activity.BaseActivity
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityLoginBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bgColor"
-    tools:context=".app.activity.actions.CreateGroupActivity">
+    tools:context=".components.activity.actions.CreateGroupActivity">
 
     <EditText
         android:id="@+id/et_groupName_addGroup"

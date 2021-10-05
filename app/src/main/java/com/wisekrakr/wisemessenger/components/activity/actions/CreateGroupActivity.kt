@@ -1,19 +1,19 @@
-package com.wisekrakr.wisemessenger.app.activity.actions
+package com.wisekrakr.wisemessenger.components.activity.actions
 
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
-import com.wisekrakr.wisemessenger.app.activity.BaseActivity
-import com.wisekrakr.wisemessenger.app.activity.HomeActivity
+import com.wisekrakr.wisemessenger.components.activity.BaseActivity
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.adapter.ContactsAdapter
-import com.wisekrakr.wisemessenger.app.EventManager
-import com.wisekrakr.wisemessenger.app.RecyclerViewDataSetup
+import com.wisekrakr.wisemessenger.components.EventManager
+import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.databinding.ActivityCreateGroupBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.model.ChatRoom
 import com.wisekrakr.wisemessenger.model.Group
-import com.wisekrakr.wisemessenger.model.User
+import com.wisekrakr.wisemessenger.model.UserProfile
 import com.wisekrakr.wisemessenger.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.repository.ChatRoomRepository
 import com.wisekrakr.wisemessenger.repository.GroupRepository
@@ -29,7 +29,7 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
         ActivityCreateGroupBinding::inflate
 
     private lateinit var contactsAdapter: ContactsAdapter
-    private var contacts = ArrayList<User>()
+    private var contacts = ArrayList<UserProfile>()
     private var selectedContacts = ArrayList<Conversationalist>()
     private lateinit var iterator: Iterator<Conversationalist>
     private lateinit var chatRoom: ChatRoom
@@ -59,7 +59,7 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
 
     private fun onSelectContact() = object : ContactsAdapter.OnItemClickListener {
 
-        override fun onClick(contact: User) {
+        override fun onClick(contact: UserProfile) {
 
             val c = Conversationalist(contact.uid, contact.username)
 
@@ -90,7 +90,10 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
 
             if (isNotEmpty(createGroupInputsArray)) {
                 val group = Group(groupName)
-                group.chatRoomUid = onCreateNewChatRoom().uid
+                group.chatRoomUid = EventManager.onCreateNewChatRoom(
+                    selectedContacts,
+                    false
+                ).uid
 
                 selectedContacts.forEach {
                     GroupRepository.saveGroup(
@@ -106,8 +109,6 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
                         Log.e(ACTIVITY_TAG, "Failure in group creation")
                     }
                 }
-
-
             } else {
                 isRequired(createGroupInputsArray)
             }
@@ -116,7 +117,7 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
 
     private fun onShowContacts() {
         launch {
-            EventManager.getAllUsers(contacts) {
+            EventManager.onGetAllUsers(contacts) {
                 RecyclerViewDataSetup.contacts(
                     contactsAdapter,
                     contacts,
@@ -127,22 +128,5 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
         }
     }
 
-    /**
-     * Creates a new ChatRoom data object and returns it to be used by a new group
-     */
-    private fun onCreateNewChatRoom(): ChatRoom {
 
-        chatRoom = ChatRoom(selectedContacts)
-
-        ChatRoomRepository.createChatRoom(
-            chatRoom
-        ).addOnSuccessListener {
-            Log.d(ACTIVITY_TAG, "Created new chat room")
-        }.addOnFailureListener {
-            Log.d(ACTIVITY_TAG, "Failed to create new chat room ${it.cause}")
-            return@addOnFailureListener
-        }
-
-        return chatRoom
-    }
 }

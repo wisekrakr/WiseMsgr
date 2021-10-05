@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.app.fragments
+package com.wisekrakr.wisemessenger.components.fragments
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,17 +6,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.wisekrakr.wisemessenger.app.activity.HomeActivity.Companion.currentUser
-import com.wisekrakr.wisemessenger.app.activity.actions.CreateGroupActivity
-import com.wisekrakr.wisemessenger.app.activity.chat.GroupChatActivity
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
+import com.wisekrakr.wisemessenger.components.activity.actions.CreateGroupActivity
+import com.wisekrakr.wisemessenger.components.activity.chat.GroupChatActivity
 import com.wisekrakr.wisemessenger.adapter.GroupsAdapter
-import com.wisekrakr.wisemessenger.app.EventManager
-import com.wisekrakr.wisemessenger.app.RecyclerViewDataSetup
-import com.wisekrakr.wisemessenger.app.activity.HomeActivity
+import com.wisekrakr.wisemessenger.components.EventManager
+import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.databinding.FragmentGroupsBinding
 import com.wisekrakr.wisemessenger.model.ChatRoom
 import com.wisekrakr.wisemessenger.model.Group
@@ -59,17 +57,14 @@ class GroupsFragment : BaseFragment<FragmentGroupsBinding>() {
     private fun onShowGroups() {
         launch {
 
-            EventManager.getAllGroupsOfCurrentUser(
+            EventManager.onGetAllGroupsOfCurrentUser(
                 currentUser!!,
-                arrayGroups,
-                groupsAdapter,
-                viewBinding.recyclerViewGroups,
-                requireContext()
+                arrayGroups
             ) {
                 RecyclerViewDataSetup
                     .groups(
                         groupsAdapter,
-                        arrayGroups,
+                        it,
                         viewBinding.recyclerViewGroups,
                         requireContext()
                     )

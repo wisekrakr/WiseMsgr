@@ -5,9 +5,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.wisekrakr.wisemessenger.app.fragments.ContactsFragment
-import com.wisekrakr.wisemessenger.app.fragments.GroupsFragment
-import com.wisekrakr.wisemessenger.app.fragments.PrivateChatFragment
+import com.wisekrakr.wisemessenger.components.fragments.ContactsFragment
+import com.wisekrakr.wisemessenger.components.fragments.GroupsFragment
+import com.wisekrakr.wisemessenger.components.fragments.PrivateChatFragment
 
 class TabsAccessorAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle) :
     FragmentStateAdapter(fragmentManager, lifecycle) {
@@ -21,17 +21,17 @@ class TabsAccessorAdapter(fragmentManager: FragmentManager, lifecycle: Lifecycle
         when(position){
             0 ->{
                 val bundle = Bundle()
+                bundle.putString("PrivateChatFragment", "Chat")
+                val privateChatFragment = PrivateChatFragment()
+                privateChatFragment.arguments = bundle
+                return privateChatFragment
+            }
+            1 ->{
+                val bundle = Bundle()
                 bundle.putString("ContactsFragment", "Contacts")
                 val contactsFragment = ContactsFragment()
                 contactsFragment.arguments = bundle
                 return contactsFragment
-            }
-            1 ->{
-                val bundle = Bundle()
-                bundle.putString("PrivateChatFragment", "Groups")
-                val privateChatFragment = PrivateChatFragment()
-                privateChatFragment.arguments = bundle
-                return privateChatFragment
             }
             2 ->{
                 val bundle = Bundle()

@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.app.activity.chat
+package com.wisekrakr.wisemessenger.components.activity.chat
 
 import android.annotation.SuppressLint
 import android.app.ActionBar
@@ -11,11 +11,11 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.app.activity.BaseActivity
+import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.adapter.ChatAdapter
 import com.wisekrakr.wisemessenger.databinding.ActivityGroupChatBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
-import com.wisekrakr.wisemessenger.app.fragments.GroupsFragment
+import com.wisekrakr.wisemessenger.components.fragments.GroupsFragment
 import com.wisekrakr.wisemessenger.model.ChatMessage
 import com.wisekrakr.wisemessenger.model.ChatRoom
 import com.wisekrakr.wisemessenger.model.Group
