@@ -15,8 +15,8 @@ import com.wisekrakr.wisemessenger.model.ChatRoom
 import com.wisekrakr.wisemessenger.model.Group
 import com.wisekrakr.wisemessenger.model.UserProfile
 import com.wisekrakr.wisemessenger.model.nondata.Conversationalist
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository
 import com.wisekrakr.wisemessenger.repository.GroupRepository
+import com.wisekrakr.wisemessenger.repository.UserProfileRepository
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.isNotEmpty
 import com.wisekrakr.wisemessenger.utils.Extensions.isRequired
@@ -30,9 +30,8 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
 
     private lateinit var contactsAdapter: ContactsAdapter
     private var contacts = ArrayList<UserProfile>()
-    private var selectedContacts = ArrayList<Conversationalist>()
+    private var selectedParticipants = ArrayList<Conversationalist>()
     private lateinit var iterator: Iterator<Conversationalist>
-    private lateinit var chatRoom: ChatRoom
     private lateinit var createGroupInputsArray: Array<EditText>
 
     override fun setup() {
@@ -45,7 +44,7 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
 
         contactsAdapter.setClickListener(onSelectContact())
 
-        selectedContacts.add(
+        selectedParticipants.add(
             Conversationalist(
                 FirebaseUtils.firebaseAuth.currentUser?.uid.toString(),
                 FirebaseUtils.firebaseAuth.currentUser?.displayName.toString()
@@ -63,14 +62,14 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
 
             val c = Conversationalist(contact.uid, contact.username)
 
-            if (!selectedContacts.contains(c)) {
+            if (!selectedParticipants.contains(c)) {
 
-                selectedContacts.add(c)
+                selectedParticipants.add(c)
 
                 makeToast("${c.username} selected")
 
             } else {
-                selectedContacts.remove(c)
+                selectedParticipants.remove(c)
 
                 makeToast("${c.username} deselected")
 
@@ -85,25 +84,33 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
     }
 
 
+    /**
+     * First check if a group name was typed into the corresponding text view
+     * Creates a new Group and new Chat room and adds the chat room uid to the group
+     * For all conversationalists we will save the group and if successful, create a new
+     * chat room that holds this group. Both will have a reference uid towards each other in the
+     * database.
+     */
     private fun onCreateGroup(groupName: String) {
         launch {
 
             if (isNotEmpty(createGroupInputsArray)) {
                 val group = Group(groupName)
-                group.chatRoomUid = EventManager.onCreateNewChatRoom(
-                    selectedContacts,
+                val chatRoom = EventManager.onCreateNewChatRoom(
+                    selectedParticipants,
                     false
-                ).uid
+                )
+                group.chatRoomUid = chatRoom.uid
 
-                selectedContacts.forEach {
+                selectedParticipants.forEach { conversationalist->
                     GroupRepository.saveGroup(
-                        it.uid,
+                        conversationalist.uid,
                         group
                     ).addOnSuccessListener {
                         makeToast("Successfully created group: $groupName")
 
-                        startActivity(Intent(this@CreateGroupActivity, HomeActivity::class.java))
-                        finish()
+                        createNewChatRoomForUserProfile(chatRoom, conversationalist.uid)
+
                     }.addOnFailureListener {
                         makeToast("Failed to create group: $groupName")
                         Log.e(ACTIVITY_TAG, "Failure in group creation")
@@ -115,6 +122,31 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
         }
     }
 
+    /**
+     * Every User Profile has a MutableList of chat room uids
+     * In this function we update the User Profile by adding the newly made chat room
+     * to that mutable list of chat rooms.
+     * They consist of private and non-private (group) chat rooms
+     * @param chatRoom the newly made chat room with 2 participants
+     * @param conversationalistUid user uid
+     */
+    private fun createNewChatRoomForUserProfile(chatRoom: ChatRoom, conversationalistUid: String){
+        launch {
+            UserProfileRepository.updateUserWithANewChatRoom(
+                chatRoom,
+                conversationalistUid
+            ).addOnCompleteListener {
+                startActivity(Intent(this@CreateGroupActivity, HomeActivity::class.java))
+                finish()
+            }.addOnFailureListener {
+                Log.e(ACTIVITY_TAG, "Failure in user profile chat room creation")
+            }
+        }
+    }
+
+    /**
+     * Gets all user profiles from the database and adds them to this activities recycler view
+     */
     private fun onShowContacts() {
         launch {
             EventManager.onGetAllUsers(contacts) {

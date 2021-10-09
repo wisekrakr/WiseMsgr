@@ -4,8 +4,10 @@ import android.content.Context
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.wisekrakr.wisemessenger.adapter.ChatRoomAdapter
 import com.wisekrakr.wisemessenger.adapter.ContactsAdapter
 import com.wisekrakr.wisemessenger.adapter.GroupsAdapter
+import com.wisekrakr.wisemessenger.model.ChatRoom
 import com.wisekrakr.wisemessenger.model.Group
 import com.wisekrakr.wisemessenger.model.User
 import com.wisekrakr.wisemessenger.model.UserProfile
@@ -28,8 +30,6 @@ object RecyclerViewDataSetup {
         )
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = contactsAdapter
-
-        Log.d(TAG, "Showing contacts.... ")
     }
 
     fun groups(
@@ -47,5 +47,22 @@ object RecyclerViewDataSetup {
         )
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = groupsAdapter
+    }
+
+    fun chatRooms(
+        chatRoomAdapter: ChatRoomAdapter,
+        arrayChatRooms: ArrayList<ChatRoom>,
+        recyclerView: RecyclerView,
+        context: Context
+    ){
+        chatRoomAdapter.setData(arrayChatRooms)
+
+        recyclerView.layoutManager = LinearLayoutManager(
+            context,
+            LinearLayoutManager.VERTICAL,
+            false
+        )
+        recyclerView.setHasFixedSize(true)
+        recyclerView.adapter = chatRoomAdapter
     }
 }

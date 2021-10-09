@@ -18,7 +18,7 @@ data class UserProfile(
 
     var location: Location? = null
     var openChatRooms: MutableList<ChatRoom> = mutableListOf()
-    var friends: MutableList<String> = mutableListOf()
+    var contacts: MutableList<String> = mutableListOf()
 
     constructor() : this("", "", "")
 

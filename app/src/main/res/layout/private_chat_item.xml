@@ -11,50 +11,43 @@
         android:id="@+id/tv_contact_name_private"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="64dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:text="Username"
         android:textColor="@color/light_gray"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/img_contact_avatar"
-        app:layout_constraintTop_toTopOf="@+id/img_contact_avatar" />
-
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/img_contact_avatar"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:civ_border_width="2dp"
-        app:srcCompat="@drawable/round_image" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv_message_private"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="9dp"
-        android:text="Status"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
+        android:text="This is a test message"
         android:textColor="@color/light_gray"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/tv_contact_name_private"
+        app:layout_constraintEnd_toStartOf="@+id/tv_date_private"
         app:layout_constraintStart_toStartOf="@+id/tv_contact_name_private"
         app:layout_constraintTop_toBottomOf="@+id/tv_contact_name_private" />
 
-    <ImageView
-        android:id="@+id/img_status"
-        android:layout_width="22dp"
-        android:layout_height="21dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_contact_name_private"
+    <TextView
+        android:id="@+id/tv_date_private"
+        android:layout_width="62dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="8dp"
+        android:gravity="center"
+        android:text="24 mins ago"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_message_private"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.214"
-        app:layout_constraintStart_toEndOf="@+id/tv_contact_name_private"
-        app:layout_constraintTop_toTopOf="@+id/tv_contact_name_private"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/round_image_online" />
+        app:layout_constraintTop_toTopOf="@+id/tv_message_private" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

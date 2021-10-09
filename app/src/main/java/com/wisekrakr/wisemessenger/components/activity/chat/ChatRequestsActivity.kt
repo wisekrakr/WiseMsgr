@@ -107,6 +107,7 @@ class ChatRequestsActivity : BaseActivity<ActivityChatRequestsBinding>() {
                     makeToast("Successfully accepted request: added user to Contacts")
 
                     addUserToANewChatRoom(requests[position])
+
                     removeRequests(requests[position])
                 }
             }

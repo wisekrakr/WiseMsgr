@@ -20,6 +20,10 @@ object ChatRoomRepository {
         return rootReference.child(Constants.REF_CHAT_ROOMS).child(uid)
     }
 
+    fun deleteChatRoom(uid: String): Task<Void> {
+        return rootReference.child(Constants.REF_CHAT_ROOMS).child(uid).removeValue()
+    }
+
     fun addMessagesToChatRoom(chatRoom: ChatRoom, chatMessage: ChatMessage): Task<Void> {
 
         return rootReference
