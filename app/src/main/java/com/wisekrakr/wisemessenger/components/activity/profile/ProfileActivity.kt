@@ -8,6 +8,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.components.EventManager
+import com.wisekrakr.wisemessenger.components.EventManager.onGetAllContactsOfCurrentUser
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
 import com.wisekrakr.wisemessenger.components.activity.actions.SearchActivity
@@ -69,30 +70,38 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
 
     /**
      * Creates a chat request in the database, which will be connected to this user profile,
-     * so that this user profile can decide to accept or ignore it.
+     * So that this user profile can decide to accept or ignore it.
+     * Gets all chat room participant of this user profile and calculates if the current user
+     * is part of one of these chat rooms. If not, the current user can send an invite. Else we can
+     * cancel the chat request.
      */
     private fun onSendRequest(requestType: RequestType) {
 
         launch {
-            if (!userProfile.contacts.contains(currentUserUid)) {
-                EventManager.onSaveChatRequest(
-                    userProfile.uid,
-                    userProfile.username,
-                    currentUserUid,
-                    currentUser!!.username,
-                    requestType
-                ) {
-                    if (requestType == RequestType.SENT) {
-                        toggleButtons(false)
+            onGetAllContactsOfCurrentUser{
+                Log.d(ACTIVITY_TAG, "SENDING REQUEST $it")
+                if (currentUserUid != it || it.isBlank()) {
+                    EventManager.onSaveChatRequest(
+                        userProfile.uid,
+                        userProfile.username,
+                        currentUserUid,
+                        currentUser!!.username,
+                        requestType
+                    ) {
+                        if (requestType == RequestType.SENT) {
+                            toggleButtons(false)
 
-                        makeToast("Successfully requested chat!")
-                    } else if (requestType == RequestType.CANCELLED) {
-                        toggleButtons(true)
+                            makeToast("Successfully requested chat!")
+                        } else if (requestType == RequestType.CANCELLED) {
+                            toggleButtons(true)
 
-                        makeToast("Successfully cancelled request!")
+                            makeToast("Successfully cancelled request!")
+                        }
                     }
                 }
             }
+
+
         }
     }
 

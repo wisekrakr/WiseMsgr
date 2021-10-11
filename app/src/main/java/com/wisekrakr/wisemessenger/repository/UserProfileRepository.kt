@@ -10,7 +10,7 @@ import com.wisekrakr.wisemessenger.utils.Constants
 
 object UserProfileRepository {
 
-    fun getCurrentUserProfile(uid: String?): DatabaseReference {
+    fun getUserProfile(uid: String?): DatabaseReference {
         return rootReference.child(Constants.REF_USER_PROFILES).child(uid!!)
     }
 
@@ -29,25 +29,25 @@ object UserProfileRepository {
         return rootReference
             .child(Constants.REF_USER_PROFILES)
             .child(currentUserUid)
-            .child("chatRooms")
+            .child(Constants.REF_USER_CHAT_ROOMS)
     }
 
     fun deleteChatRoomFromUserProfile(currentUserUid:String, chatRoomUid: String): Task<Void> {
         return rootReference
             .child(Constants.REF_USER_PROFILES)
             .child(currentUserUid)
-            .child("chatRooms")
+            .child(Constants.REF_USER_CHAT_ROOMS)
             .child(chatRoomUid)
             .removeValue()
     }
 
-    //todo might have an exception where expecting a list, but getting a hashmap. Because of child and setvalue
     fun updateUserWithANewChatRoom(chatRoom: ChatRoom, userUid:String): Task<Void> {
         return rootReference
             .child(Constants.REF_USER_PROFILES)
             .child(userUid)
-            .child("chatRooms")
+            .child(Constants.REF_USER_CHAT_ROOMS)
             .child(chatRoom.uid)
             .setValue(chatRoom.isPrivate)
     }
+
 }

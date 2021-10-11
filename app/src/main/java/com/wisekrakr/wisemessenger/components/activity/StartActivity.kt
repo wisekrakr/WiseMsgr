@@ -12,6 +12,7 @@ import com.wisekrakr.wisemessenger.components.activity.auth.LoginActivity
 import com.wisekrakr.wisemessenger.components.activity.auth.RegisterActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityStartBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
+import com.wisekrakr.wisemessenger.utils.Actions.IntentActions.returnToActivityWithFlags
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import java.util.logging.Handler
 

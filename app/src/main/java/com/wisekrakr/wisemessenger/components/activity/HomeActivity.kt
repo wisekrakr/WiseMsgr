@@ -79,7 +79,6 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
     }
 
 
-
     private fun onCreateTabLayout() {
 
         tabsAccessorAdapter = TabsAccessorAdapter(supportFragmentManager, lifecycle)

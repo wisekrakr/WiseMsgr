@@ -9,7 +9,7 @@ class Constants {
         const val REF_MESSAGES = "messages"
         const val REF_CHAT_ROOMS = "chat_rooms"
         const val REF_CHAT_REQUESTS = "chat-requests"
-        const val REF_CONTACTS = "contacts"
+        const val REF_USER_CHAT_ROOMS = "chatRooms"
 
         const val STORAGE_AVATARS = "avatars"
         const val STORAGE_BANNERS = "banners"

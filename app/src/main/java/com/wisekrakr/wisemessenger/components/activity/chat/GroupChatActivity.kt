@@ -21,7 +21,6 @@ import com.wisekrakr.wisemessenger.model.ChatRoom
 import com.wisekrakr.wisemessenger.model.Group
 import com.wisekrakr.wisemessenger.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.repository.ChatMessageRepository.saveChatMessage
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.addMessagesToChatRoom
 import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.getChatRoom
 import com.wisekrakr.wisemessenger.utils.Actions
 import com.wisekrakr.wisemessenger.utils.Constants
@@ -104,14 +103,14 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
      */
     private fun addChatMessageToChatRoom(chatMessage: ChatMessage) {
         launch {
-            addMessagesToChatRoom(chatRoom, chatMessage)
-                .addOnSuccessListener {
-                    Log.d(ACTIVITY_TAG, "Successfully saved Chat Messages to ChatRoom")
-
-                }.addOnFailureListener {
-                    Log.d(ACTIVITY_TAG,
-                        "Failed saving Chat Messages to ChatRoom: ${it.cause}")
-                }
+//            addMessagesToChatRoom(chatRoom, chatMessage)
+//                .addOnSuccessListener {
+//                    Log.d(ACTIVITY_TAG, "Successfully saved Chat Messages to ChatRoom")
+//
+//                }.addOnFailureListener {
+//                    Log.d(ACTIVITY_TAG,
+//                        "Failed saving Chat Messages to ChatRoom: ${it.cause}")
+//                }
 
         }
     }

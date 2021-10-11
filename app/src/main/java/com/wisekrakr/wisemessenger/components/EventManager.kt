@@ -9,13 +9,16 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
+import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.model.*
 import com.wisekrakr.wisemessenger.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.model.nondata.RequestType
 import com.wisekrakr.wisemessenger.repository.ChatRequestRepository
 import com.wisekrakr.wisemessenger.repository.ChatRoomRepository
+import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.getChatRoom
 import com.wisekrakr.wisemessenger.repository.GroupRepository.getGroupsUser
 import com.wisekrakr.wisemessenger.repository.UserProfileRepository
+import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfile
 import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfileChatRooms
 import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfiles
 import com.wisekrakr.wisemessenger.utils.Constants.Companion.STORAGE_AVATARS
@@ -51,6 +54,42 @@ object EventManager {
 
                 override fun onCancelled(error: DatabaseError) {
                     Log.e(TAG, error.message)
+                }
+            })
+    }
+
+    fun onGetAllContactsOfCurrentUser(
+        getContact: (String) -> Unit,
+    ) {
+        getUserProfile(firebaseAuth.uid)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val userProfile = snapshot.getValue(UserProfile::class.java)
+
+                    if (userProfile!!.chatRooms.isNotEmpty()) {
+
+                        userProfile.chatRooms.keys.forEach {
+                            getChatRoom(it).addListenerForSingleValueEvent(
+                                object : ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        val chatRoom = snapshot.getValue(ChatRoom::class.java)
+
+                                        chatRoom?.participants?.forEach { conversationalist ->
+                                            if (conversationalist.uid != firebaseAuth.uid) {
+                                                getContact(conversationalist.uid)
+                                            }
+                                        }
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
                 }
             })
     }
@@ -162,7 +201,11 @@ object EventManager {
         )
     }
 
-    fun onEndingConversation(chatRoom: ChatRoom, context: Context, toggleButtons: (Boolean) -> Unit){
+    fun onEndingConversation(
+        chatRoom: ChatRoom,
+        context: Context,
+        toggleButtons: (Boolean) -> Unit,
+    ) {
         chatRoom.participants.forEach {
             UserProfileRepository.deleteChatRoomFromUserProfile(it.uid, chatRoom.uid)
                 .addOnSuccessListener {
@@ -174,11 +217,14 @@ object EventManager {
 
         ChatRoomRepository.deleteChatRoom(chatRoom.uid)
             .addOnCompleteListener {
-                Toast.makeText(context, "You are no longer chatting with this user", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context,
+                    "You are no longer chatting with this user",
+                    Toast.LENGTH_SHORT).show()
 
                 toggleButtons(true)
             }.addOnFailureListener {
-                Toast.makeText(context, "Failure to delete current chat room", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Failure to delete current chat room", Toast.LENGTH_SHORT)
+                    .show()
             }
     }
 

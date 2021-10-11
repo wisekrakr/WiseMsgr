@@ -24,13 +24,18 @@ object ChatRoomRepository {
         return rootReference.child(Constants.REF_CHAT_ROOMS).child(uid).removeValue()
     }
 
-    fun addMessagesToChatRoom(chatRoom: ChatRoom, chatMessage: ChatMessage): Task<Void> {
+    fun getChatRoomMessages(uid: String): DatabaseReference {
+        return rootReference.child(Constants.REF_CHAT_ROOMS).child(uid).child(Constants.REF_MESSAGES)
+    }
+
+    fun addMessageToChatRoom(chatRoom: ChatRoom, chatMessage: ChatMessage): Task<Void> {
 
         return rootReference
             .child(Constants.REF_CHAT_ROOMS)
             .child(chatRoom.uid)
-            .child("messages")
+            .child(Constants.REF_MESSAGES)
             .child(chatMessage.uid)
-            .setValue(chatMessage)
+            .setValue(chatMessage.chatRoomUid)
+
     }
 }

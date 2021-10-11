@@ -108,6 +108,7 @@ class ChatRequestsActivity : BaseActivity<ActivityChatRequestsBinding>() {
 
                     addUserToANewChatRoom(requests[position])
 
+
                     removeRequests(requests[position])
                 }
             }
@@ -147,7 +148,6 @@ class ChatRequestsActivity : BaseActivity<ActivityChatRequestsBinding>() {
                     it.uid
                 )
             }
-
         }
     }
 

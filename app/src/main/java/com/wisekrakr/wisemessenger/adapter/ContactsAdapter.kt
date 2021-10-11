@@ -22,8 +22,8 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>
 
     class ContactsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        val name: TextView = view.findViewById(R.id.tv_contact_name_private)
-        val status: TextView = view.findViewById(R.id.tv_message_private)
+        val name: TextView = view.findViewById(R.id.tv_contact_name)
+        val status: TextView = view.findViewById(R.id.tv_contact_status)
         val avatar: ImageView = view.findViewById(R.id.img_contact_avatar)
 
     }

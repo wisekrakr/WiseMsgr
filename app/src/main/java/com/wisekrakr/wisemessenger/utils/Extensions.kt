@@ -2,12 +2,15 @@ package com.wisekrakr.wisemessenger.utils
 
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.wisekrakr.wisemessenger.model.ChatMessage
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.abs
 
 
 object Extensions {
@@ -40,7 +43,7 @@ object Extensions {
     fun notification(
         context: Context,
         title: String?,
-        message: String?
+        message: String?,
     ) {
         val builder: AlertDialog.Builder =
             AlertDialog.Builder(context, com.wisekrakr.wisemessenger.R.style.AlertDialog)
@@ -74,5 +77,23 @@ object Extensions {
                 input.error = "${input.hint} is required"
             }
         }
+    }
+
+    /**
+     * Sift through all Chat Messages and get the Chat Message with the latest date.
+     */
+    fun getLatestChatMessage(messages: MutableCollection<ChatMessage>): ChatMessage? {
+        var minDiff: Long = -1
+        val currentTime = Date().time
+        var chatMessage: ChatMessage? = null
+        for (msg in messages) {
+
+            val diff = abs(currentTime - msg.date.time)
+            if (minDiff == -1L || diff < minDiff) {
+                minDiff = diff
+                chatMessage = msg
+            }
+        }
+        return chatMessage
     }
 }

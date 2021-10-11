@@ -15,7 +15,7 @@ import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
 import com.wisekrakr.wisemessenger.databinding.ActivityProfileSettingsBinding
 import com.wisekrakr.wisemessenger.model.UserProfile
-import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getCurrentUserProfile
+import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfile
 import com.wisekrakr.wisemessenger.repository.UserProfileRepository.saveUserProfile
 import com.wisekrakr.wisemessenger.repository.UserRepository.updateUser
 import com.wisekrakr.wisemessenger.utils.Actions
@@ -63,7 +63,8 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
             makeToast("Please fill out your profile.")
         } else {
             launch {
-                getCurrentUserProfile(currentUser!!.uid).addListenerForSingleValueEvent(
+                getUserProfile(currentUser!!.uid)
+                    .addListenerForSingleValueEvent(
                     object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             profile = snapshot.getValue(UserProfile::class.java)
