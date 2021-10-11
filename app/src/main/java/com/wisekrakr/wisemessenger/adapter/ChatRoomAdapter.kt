@@ -103,8 +103,6 @@ class ChatRoomAdapter : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val chatMessage = snapshot.getValue(ChatMessage::class.java)
 
-                    Log.d(TAG, "CHAT MESSAGE SHOWN $chatMessage")
-
                     if(chatMessage != null){
                         messages.add(chatMessage)
 

@@ -58,7 +58,7 @@ class GroupsFragment : BaseFragment<FragmentGroupsBinding>() {
         launch {
 
             EventManager.onGetAllGroupsOfCurrentUser(
-                currentUser!!,
+                currentUser!!.uid,
                 arrayGroups
             ) {
                 RecyclerViewDataSetup

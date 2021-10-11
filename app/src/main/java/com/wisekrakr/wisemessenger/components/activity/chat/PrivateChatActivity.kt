@@ -1,18 +1,21 @@
 package com.wisekrakr.wisemessenger.components.activity.chat
 
+import android.content.Intent
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.ImageView
 import androidx.appcompat.app.ActionBar
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.adapter.ChatAdapter
+import com.wisekrakr.wisemessenger.adapter.ChatMessageAdapter
+import com.wisekrakr.wisemessenger.components.EventManager
+import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.components.fragments.PrivateChatFragment.Companion.CHAT_ROOM_KEY
 import com.wisekrakr.wisemessenger.components.fragments.PrivateChatFragment.Companion.CONTACT_KEY
 
@@ -22,12 +25,11 @@ import com.wisekrakr.wisemessenger.model.ChatMessage
 import com.wisekrakr.wisemessenger.model.ChatRoom
 import com.wisekrakr.wisemessenger.model.UserProfile
 import com.wisekrakr.wisemessenger.model.nondata.Conversationalist
-import com.wisekrakr.wisemessenger.repository.ChatMessageRepository.getChatMessage
 import com.wisekrakr.wisemessenger.repository.ChatMessageRepository.saveChatMessage
 import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.addMessageToChatRoom
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.getChatRoomMessages
 import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfile
 import com.wisekrakr.wisemessenger.utils.Actions
+import com.wisekrakr.wisemessenger.utils.Actions.IntentActions.returnToActivityWithFlags
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.launch
@@ -38,7 +40,7 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
     private lateinit var contact: Conversationalist
     private lateinit var userProfile: UserProfile
     private lateinit var chatRoom: ChatRoom
-    private lateinit var chatAdapter: ChatAdapter
+    private lateinit var chatMessageAdapter: ChatMessageAdapter
 
     private val messagesList: ArrayList<ChatMessage> = ArrayList()
 
@@ -54,7 +56,7 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
 
         getCurrentContact()
 
-        chatAdapter = ChatAdapter()
+        chatMessageAdapter = ChatMessageAdapter()
 
         onShowMessages()
 
@@ -130,74 +132,18 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
     private fun onShowMessages() {
         launch {
 
-//
-//
-//            getAllMessages().addChildEventListener(object : ChildEventListener {
-//                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-//                    val chatMessage = snapshot.getValue(ChatMessage::class.java)
-//
-//                    if (chatMessage != null) { // todo is message part of this chatroom?
-//
-//                        Log.d(ACTIVITY_TAG, "SHOWING MSG ${chatMessage.message}")
-//
-//
-//
-//                        if (chatMessage.sender?.uid == firebaseAuth.currentUser!!.uid) {
-//                            chatMessage.messageType = 0
-//                        } else {
-//                            chatMessage.messageType = 1
-//                        }
-//                        messagesList.add(chatMessage)
-//                        chatAdapter.notifyDataSetChanged()
-//                    }
-//
-//                    Log.d(ACTIVITY_TAG, "Adding message to list ${chatMessage?.message}")
-//
-//                }
-//
-//                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
-//                override fun onChildRemoved(snapshot: DataSnapshot) {}
-//                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-//                override fun onCancelled(error: DatabaseError) {}
-//            })
-
-            getChatRoomMessages(chatRoom.uid).addChildEventListener(object : ChildEventListener {
-                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-
-                    getChatMessage(snapshot.key.toString()).addListenerForSingleValueEvent(
-                        object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                val chatMessage = snapshot.getValue(ChatMessage::class.java)
-
-                                if (chatMessage != null) {
-                                    messagesList.add(chatMessage)
-                                    chatAdapter.notifyDataSetChanged()
-                                }
-                            }
-
-                            override fun onCancelled(error: DatabaseError) {
-                            }
-                        }
+            EventManager.onGetAllChatMessagesOfChatRoom(
+                chatRoom.uid,
+                messagesList
+            ){
+                RecyclerViewDataSetup
+                    .messages(
+                        chatMessageAdapter,
+                        it,
+                        binding.recyclerViewPrivateChat,
+                        this@PrivateChatActivity
                     )
-                }
-
-                override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
-                override fun onChildRemoved(snapshot: DataSnapshot) {}
-                override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-                override fun onCancelled(error: DatabaseError) {}
-            })
-
-            chatAdapter.setData(messagesList)
-
-            binding.recyclerViewPrivateChat.layoutManager = LinearLayoutManager(
-                this@PrivateChatActivity,
-                LinearLayoutManager.VERTICAL,
-                false
-            )
-            binding.recyclerViewPrivateChat.setHasFixedSize(true)
-            binding.recyclerViewPrivateChat.adapter = chatAdapter
-
-
+            }
         }
     }
 
@@ -217,11 +163,13 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
 
         val layoutParams = ActionBar.LayoutParams(
             ActionBar.LayoutParams.WRAP_CONTENT,
-            ActionBar.LayoutParams.WRAP_CONTENT, Gravity.END
+            ActionBar.LayoutParams.WRAP_CONTENT,
+            Gravity.END
         )
-//        layoutParams.rightMargin = 10
+
         circleImageView.layoutParams = layoutParams
         supportActionBar?.customView = circleImageView
     }
+
 
 }

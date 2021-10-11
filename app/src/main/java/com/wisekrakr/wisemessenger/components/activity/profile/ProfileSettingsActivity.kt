@@ -24,6 +24,8 @@ import com.wisekrakr.wisemessenger.utils.Constants.Companion.STORAGE_BANNERS
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import kotlinx.coroutines.launch
+import java.util.*
+import kotlin.collections.HashMap
 
 class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
 
@@ -113,19 +115,22 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
      */
     private fun onUpdateUserProfile(profileMap: HashMap<String, String>) {
 
-
         profileMap["uid"] = currentUser!!.uid
         profileMap["username"] = binding.txtUsernameSettings.text.toString()
         profileMap["status"] = binding.txtStatusSettings.text.toString()
 
+        val userProfile = UserProfile(
+            profileMap["uid"].toString(),
+            profileMap["username"].toString(),
+            profileMap["status"].toString(),
+            profileMap["avatarUrl"].toString(),
+            profileMap["bannerUrl"].toString(),
+            profile!!.chatRooms,
+        )
+        userProfile.updatedAt = Date()
+
         saveUserProfile(
-            UserProfile(
-                profileMap["uid"].toString(),
-                profileMap["username"].toString(),
-                profileMap["status"].toString(),
-                profileMap["avatarUrl"].toString(),
-                profileMap["bannerUrl"].toString()
-            )
+            userProfile
         )
             .addOnSuccessListener {
                 makeToast("Saved profile successfully!")
@@ -170,6 +175,9 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
                     onUpdateUserProfile(it)
                 }
             }
+
+            profileMap["avatarUrl"] = profile!!.avatarUrl
+            profileMap["bannerUrl"] = profile!!.bannerUrl
 
             onUpdateUserProfile(profileMap)
 

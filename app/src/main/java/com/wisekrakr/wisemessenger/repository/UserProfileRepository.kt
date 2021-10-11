@@ -21,7 +21,7 @@ object UserProfileRepository {
     fun saveUserProfile(userProfile: UserProfile): Task<Void> {
         return rootReference
             .child(Constants.REF_USER_PROFILES)
-            .child(HomeActivity.currentUser!!.uid)
+            .child(userProfile.uid)
             .setValue(userProfile)
     }
 

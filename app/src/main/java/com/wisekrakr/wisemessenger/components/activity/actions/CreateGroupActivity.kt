@@ -4,6 +4,9 @@ import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.widget.EditText
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.adapter.ContactsAdapter
@@ -17,6 +20,7 @@ import com.wisekrakr.wisemessenger.model.UserProfile
 import com.wisekrakr.wisemessenger.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.repository.GroupRepository
 import com.wisekrakr.wisemessenger.repository.UserProfileRepository
+import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfile
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.isNotEmpty
 import com.wisekrakr.wisemessenger.utils.Extensions.isRequired
@@ -149,16 +153,32 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
      */
     private fun onShowContacts() {
         launch {
-            EventManager.onGetAllUsers(contacts) {
-                RecyclerViewDataSetup.contacts(
-                    contactsAdapter,
-                    contacts,
-                    binding.recyclerviewAddGroup,
-                    this@CreateGroupActivity
-                )
+            EventManager.onGetAllContactsOfCurrentUser {
+                getContact(it)
             }
         }
     }
 
+    private fun getContact(uid: String) {
+        getUserProfile(uid)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val userProfile = snapshot.getValue(UserProfile::class.java)
 
+                    if (userProfile?.uid != FirebaseUtils.firebaseAuth.uid) {
+                        contacts.add(userProfile!!)
+                    }
+
+                    RecyclerViewDataSetup.contacts(
+                        contactsAdapter,
+                        contacts,
+                        binding.recyclerviewAddGroup,
+                        this@CreateGroupActivity
+                    )
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+            })
+    }
 }

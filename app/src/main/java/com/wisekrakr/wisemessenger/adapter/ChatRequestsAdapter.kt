@@ -6,18 +6,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.model.ChatRequest
+import com.wisekrakr.wisemessenger.model.nondata.RequestType
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
+import org.ocpsoft.prettytime.PrettyTime
 
 class ChatRequestsAdapter : RecyclerView.Adapter<ChatRequestsAdapter.RequestsViewHolder>() {
 
     private var listener: OnButtonClickListener? = null
     private var context: Context? = null
-    private var chatRequest = ArrayList<ChatRequest>()
+    private var chatRequests = ArrayList<ChatRequest>()
 
 
     class RequestsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -42,23 +44,41 @@ class ChatRequestsAdapter : RecyclerView.Adapter<ChatRequestsAdapter.RequestsVie
     }
 
     fun setData(arrayData: ArrayList<ChatRequest>) {
-        chatRequest = arrayData
+        chatRequests = arrayData
         notifyDataSetChanged()
 
         Log.d(TAG, "Set data for ChatRequestsAdapter: requests size =  $itemCount")
     }
 
     override fun onBindViewHolder(holder: RequestsViewHolder, position: Int) {
+        val chatRequest = chatRequests[position]
 
-        holder.name.text = chatRequest[position].toUsername
-        holder.date.text = chatRequest[position].createdAt.toString()
 
-        holder.btnAccept.setOnClickListener {
-            listener!!.onAcceptClicked(position)
-        }
+        if(chatRequest.requestType == RequestType.RECEIVED){
+            holder.name.text = chatRequest.toUsername
+            holder.date.text = chatRequest.createdAt.toString()
 
-        holder.btnIgnore.setOnClickListener {
-            listener!!.onIgnoreClicked(position)
+            holder.btnAccept.setOnClickListener {
+                listener!!.onAcceptClicked(position)
+            }
+
+            holder.btnIgnore.setOnClickListener {
+                listener!!.onIgnoreClicked(position)
+            }
+        }else if(chatRequest.requestType == RequestType.SENT){
+            Log.d(TAG, "REQUEST $chatRequest")
+
+            holder.name.text = chatRequest.toUsername
+            holder.date.text = PrettyTime().format(chatRequest.createdAt)
+
+            holder.btnAccept.visibility = View.INVISIBLE
+            holder.btnAccept.isEnabled = false
+
+
+            holder.btnIgnore.text = "Cancel Request"
+            holder.btnIgnore.setOnClickListener {
+                listener!!.onIgnoreClicked(position)
+            }
         }
     }
 
@@ -67,7 +87,7 @@ class ChatRequestsAdapter : RecyclerView.Adapter<ChatRequestsAdapter.RequestsVie
     }
 
     override fun getItemCount(): Int {
-        return chatRequest.size
+        return chatRequests.size
     }
 
     fun setClickListener(clickListener: OnButtonClickListener) {

@@ -13,7 +13,7 @@ import com.wisekrakr.wisemessenger.adapter.utils.ChatViewHolder
 import com.wisekrakr.wisemessenger.model.ChatMessage
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 
-internal class ChatAdapter : RecyclerView.Adapter<ChatViewHolder<*>>(){
+class ChatMessageAdapter : RecyclerView.Adapter<ChatViewHolder<*>>(){
 
     private var context: Context? = null
     private var messages = ArrayList<ChatMessage>()

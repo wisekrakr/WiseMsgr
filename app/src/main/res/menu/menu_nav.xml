@@ -7,8 +7,8 @@
         android:id="@+id/nav_find_contacts"
         app:showAsAction="never"/>
 
-    <item android:title="Chat Requests"
-        android:id="@+id/nav_requests"
+    <item android:title="My Contacts"
+        android:id="@+id/nav_contacts"
         app:showAsAction="never"/>
 
     <item android:id="@+id/nav_settings"

@@ -13,9 +13,11 @@ import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.model.*
 import com.wisekrakr.wisemessenger.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.model.nondata.RequestType
+import com.wisekrakr.wisemessenger.repository.ChatMessageRepository
 import com.wisekrakr.wisemessenger.repository.ChatRequestRepository
 import com.wisekrakr.wisemessenger.repository.ChatRoomRepository
 import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.getChatRoom
+import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.getChatRoomMessages
 import com.wisekrakr.wisemessenger.repository.GroupRepository.getGroupsUser
 import com.wisekrakr.wisemessenger.repository.UserProfileRepository
 import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfile
@@ -23,9 +25,7 @@ import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfi
 import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfiles
 import com.wisekrakr.wisemessenger.utils.Constants.Companion.STORAGE_AVATARS
 import com.wisekrakr.wisemessenger.utils.Constants.Companion.STORAGE_BANNERS
-import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
-import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -66,6 +66,7 @@ object EventManager {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val userProfile = snapshot.getValue(UserProfile::class.java)
 
+
                     if (userProfile!!.chatRooms.isNotEmpty()) {
 
                         userProfile.chatRooms.keys.forEach {
@@ -86,6 +87,8 @@ object EventManager {
                                 }
                             )
                         }
+                    } else {
+                        getContact("")
                     }
                 }
 
@@ -94,12 +97,56 @@ object EventManager {
             })
     }
 
+    fun onGetAllChatMessagesOfChatRoom(
+        chatRoomUid: String,
+        list: ArrayList<ChatMessage>,
+        setupViewBinding: (ArrayList<ChatMessage>) -> Unit,
+    ) {
+
+        getChatRoomMessages(chatRoomUid).addChildEventListener(object : ChildEventListener {
+            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
+
+                ChatMessageRepository.getChatMessage(snapshot.key.toString())
+                    .addListenerForSingleValueEvent(
+                        object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                val chatMessage = snapshot.getValue(ChatMessage::class.java)
+
+                                if (chatMessage != null) {
+
+                                    if (chatMessage.sender?.uid == firebaseAuth.currentUser!!.uid) {
+                                        chatMessage.messageType = 0
+                                    } else {
+                                        chatMessage.messageType = 1
+                                    }
+                                    list.add(chatMessage)
+
+                                }
+
+                                setupViewBinding(list)
+
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                            }
+                        }
+                    )
+            }
+
+            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
+            override fun onChildRemoved(snapshot: DataSnapshot) {}
+            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
+    }
+
     fun onGetAllGroupsOfCurrentUser(
-        currentUser: User,
+        currentUserUid: String,
         groups: ArrayList<Group>,
         setupViewBinding: (ArrayList<Group>) -> Unit,
     ) {
-        getGroupsUser(currentUser.uid).addListenerForSingleValueEvent(object :
+        getGroupsUser(currentUserUid).addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 snapshot.children.forEach {

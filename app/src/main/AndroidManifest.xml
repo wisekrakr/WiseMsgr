@@ -13,7 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.WiseMessenger">
-        <activity android:name=".components.activity.chat.ChatRequestsActivity" />
+        <activity android:name=".components.activity.chat.ContactsActivity" />
         <activity android:name=".components.activity.profile.ProfileActivity" />
         <activity android:name=".components.activity.actions.SearchActivity" />
         <activity android:name=".components.activity.auth.LoginMobileActivity" />

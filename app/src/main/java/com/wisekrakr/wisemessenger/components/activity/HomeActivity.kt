@@ -97,17 +97,17 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
                 0 -> {
                     tab
                         .setText("Chat")
-                        .setIcon(R.drawable.icon_private_chat)
+                        .setIcon(R.drawable.icon_chat)
                 }
                 1 -> {
                     tab
-                        .setText("Contacts")
-                        .setIcon(R.drawable.icon_contacts)
+                        .setText("Groups")
+                        .setIcon(R.drawable.icon_group_chat)
                 }
                 2 -> {
                     tab
-                        .setText("Groups")
-                        .setIcon(R.drawable.icon_group_chat)
+                        .setText("Requests")
+                        .setIcon(R.drawable.icon_request)
                 }
             }
 

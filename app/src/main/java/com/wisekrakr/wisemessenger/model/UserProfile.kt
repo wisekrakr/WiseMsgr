@@ -1,6 +1,7 @@
 package com.wisekrakr.wisemessenger.model
 
 import android.location.Location
+import android.location.LocationManager
 import java.io.Serializable
 import java.util.*
 import kotlin.collections.ArrayList
@@ -12,14 +13,14 @@ data class UserProfile(
     var status: String = "",
     var avatarUrl: String = "",
     var bannerUrl: String = "",
+    var chatRooms: HashMap<String, Boolean> = hashMapOf(),
 ) : Serializable {
 
-    var createdAt: Date = Date()
+    val createdAt: Date = Date()
     var updatedAt: Date? = null
 
-    var location: Location? = null
-    var chatRooms: HashMap<String, Boolean> = hashMapOf()
-    var contacts: MutableList<String> = mutableListOf()
+    var location: Location? =  null//Location(LocationManager.GPS_PROVIDER)
+
 
     constructor() : this("", "", "")
 

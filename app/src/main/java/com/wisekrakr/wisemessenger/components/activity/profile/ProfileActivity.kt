@@ -51,8 +51,6 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
         binding.btnCancelRequestProfile.setOnClickListener {
             onSendRequest(RequestType.CANCELLED)
         }
-
-
     }
 
     /**
@@ -100,8 +98,6 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
                     }
                 }
             }
-
-
         }
     }
 
@@ -133,7 +129,6 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
                         Log.d(ACTIVITY_TAG,
                             "Error in getting chat requests for user ${error.message}")
                     }
-
                 })
         }
     }

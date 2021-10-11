@@ -12,7 +12,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
-import com.wisekrakr.wisemessenger.adapter.ChatAdapter
+import com.wisekrakr.wisemessenger.adapter.ChatMessageAdapter
 import com.wisekrakr.wisemessenger.databinding.ActivityGroupChatBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.components.fragments.GroupsFragment
@@ -34,7 +34,7 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
         ActivityGroupChatBinding::inflate
 
     private lateinit var group: Group
-    private lateinit var chatAdapter: ChatAdapter
+    private lateinit var chatMessageAdapter: ChatMessageAdapter
     private lateinit var chatRoom: ChatRoom
 
     private val messagesList: ArrayList<ChatMessage> = ArrayList()
@@ -46,7 +46,7 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
 
 //        showGroupAvatarInActionBar(group)
 
-        chatAdapter = ChatAdapter()
+        chatMessageAdapter = ChatMessageAdapter()
 
         onShowMessages(chatRoom.uid)
 
@@ -134,7 +134,7 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
                                 message.messageType = 1
                             }
                             messagesList.add(message)
-                            chatAdapter.notifyDataSetChanged()
+                            chatMessageAdapter.notifyDataSetChanged()
                         }
                     }
 
@@ -149,7 +149,7 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
                     override fun onCancelled(error: DatabaseError) {}
                 })
 
-            chatAdapter.setData(messagesList)
+            chatMessageAdapter.setData(messagesList)
 
             val lm = LinearLayoutManager(
                 this@GroupChatActivity,
@@ -160,9 +160,9 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
             binding.recyclerViewGroupChat.layoutManager = lm
             binding.recyclerViewGroupChat.setHasFixedSize(true)
 
-            binding.recyclerViewGroupChat.adapter = chatAdapter
+            binding.recyclerViewGroupChat.adapter = chatMessageAdapter
 
-            binding.recyclerViewGroupChat.scrollToPosition(chatAdapter.itemCount-1)
+            binding.recyclerViewGroupChat.scrollToPosition(chatMessageAdapter.itemCount-1)
 
         }
 

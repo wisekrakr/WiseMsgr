@@ -1,49 +1,39 @@
-package com.wisekrakr.wisemessenger.components.fragments
+package com.wisekrakr.wisemessenger.components.activity.chat
 
 import android.content.Intent
-import android.os.Bundle
-import android.util.Log
-import android.view.View
-import com.google.firebase.database.ChildEventListener
+import android.view.LayoutInflater
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.adapter.ContactsAdapter
 import com.wisekrakr.wisemessenger.components.EventManager
-import com.wisekrakr.wisemessenger.components.EventManager.onGetAllContactsOfCurrentUser
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
-import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
+import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.actions.SearchActivity
 import com.wisekrakr.wisemessenger.components.activity.profile.ProfileActivity
-import com.wisekrakr.wisemessenger.databinding.FragmentContactsBinding
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
-import com.wisekrakr.wisemessenger.model.ChatRoom
+import com.wisekrakr.wisemessenger.databinding.ActivityContactsBinding
+import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.model.UserProfile
-import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfile
-import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfileChatRooms
-import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
+import com.wisekrakr.wisemessenger.repository.UserProfileRepository
 import kotlinx.coroutines.launch
 
-
-class ContactsFragment : BaseFragment<FragmentContactsBinding>() {
-
-    override val bindingInflater: BindingInflater<FragmentContactsBinding> =
-        FragmentContactsBinding::inflate
+class ContactsActivity : BaseActivity<ActivityContactsBinding>() {
+    override val bindingInflater: (LayoutInflater) -> ActivityContactsBinding =
+        ActivityContactsBinding::inflate
 
     private lateinit var contactsAdapter: ContactsAdapter
     private var arrayContacts = ArrayList<UserProfile>()
 
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun setup() {
 
         contactsAdapter = ContactsAdapter()
 
         onShowContacts()
 
         contactsAdapter.setClickListener(onSelectContact)
-    }
 
+    }
 
     private val onSelectContact = object : ContactsAdapter.OnItemClickListener {
         override fun onClick(contact: UserProfile) {
@@ -52,27 +42,27 @@ class ContactsFragment : BaseFragment<FragmentContactsBinding>() {
     }
 
     private fun showProfile(userProfile: UserProfile) {
-        val intent = Intent(requireContext(), ProfileActivity::class.java)
+        val intent = Intent(this, ProfileActivity::class.java)
             .putExtra(SearchActivity.USER_PROFILE_KEY, userProfile)
         startActivity(intent)
-        activity?.finish()
+        finish()
     }
 
     private fun onShowContacts() {
         launch {
-            onGetAllContactsOfCurrentUser{
+            EventManager.onGetAllContactsOfCurrentUser {
                 getContact(it)
             }
         }
     }
 
     private fun getContact(uid: String) {
-        getUserProfile(uid)
+        UserProfileRepository.getUserProfile(uid)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val userProfile = snapshot.getValue(UserProfile::class.java)
 
-                    if (userProfile?.uid != firebaseAuth.uid) {
+                    if (userProfile?.uid != FirebaseUtils.firebaseAuth.uid) {
                         arrayContacts.add(userProfile!!)
                     }
 
@@ -80,10 +70,10 @@ class ContactsFragment : BaseFragment<FragmentContactsBinding>() {
                         .contacts(
                             contactsAdapter,
                             arrayContacts,
-                            viewBinding.recyclerViewContacts,
-                            requireContext()
+                            binding.recyclerViewContacts,
+                            this@ContactsActivity
                         )
-                    viewBinding.tvNumberOfContactsContacts.text = arrayContacts.size.toString()
+                    binding.tvNumberOfContactsContacts.text = arrayContacts.size.toString()
 
                 }
 
@@ -91,4 +81,11 @@ class ContactsFragment : BaseFragment<FragmentContactsBinding>() {
                 }
             })
     }
+
+    override fun supportBar() {
+        supportActionBar?.title = "My Contacts"
+        supportActionBar?.setHomeButtonEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
 }
