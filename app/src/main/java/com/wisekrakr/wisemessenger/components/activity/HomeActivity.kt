@@ -11,13 +11,13 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.adapter.TabsAccessorAdapter
+import com.wisekrakr.wisemessenger.api.adapter.TabsAccessorAdapter
 import com.wisekrakr.wisemessenger.components.activity.profile.ProfileSettingsActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityHomeBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.updateFirebaseUser
-import com.wisekrakr.wisemessenger.model.User
-import com.wisekrakr.wisemessenger.repository.UserRepository.getCurrentUser
+import com.wisekrakr.wisemessenger.api.model.User
+import com.wisekrakr.wisemessenger.api.repository.UserRepository.getCurrentUser
 import com.wisekrakr.wisemessenger.utils.Actions.IntentActions.returnToActivityWithFlags
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast

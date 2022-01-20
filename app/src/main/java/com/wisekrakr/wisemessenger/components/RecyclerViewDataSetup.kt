@@ -3,14 +3,14 @@ package com.wisekrakr.wisemessenger.components
 import android.content.Context
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wisekrakr.wisemessenger.adapter.ChatMessageAdapter
-import com.wisekrakr.wisemessenger.adapter.ChatRoomAdapter
-import com.wisekrakr.wisemessenger.adapter.ContactsAdapter
-import com.wisekrakr.wisemessenger.adapter.GroupsAdapter
-import com.wisekrakr.wisemessenger.model.ChatMessage
-import com.wisekrakr.wisemessenger.model.ChatRoom
-import com.wisekrakr.wisemessenger.model.Group
-import com.wisekrakr.wisemessenger.model.UserProfile
+import com.wisekrakr.wisemessenger.api.adapter.ChatMessageAdapter
+import com.wisekrakr.wisemessenger.api.adapter.ChatRoomAdapter
+import com.wisekrakr.wisemessenger.api.adapter.ContactsAdapter
+import com.wisekrakr.wisemessenger.api.adapter.GroupsAdapter
+import com.wisekrakr.wisemessenger.api.model.ChatMessage
+import com.wisekrakr.wisemessenger.api.model.ChatRoom
+import com.wisekrakr.wisemessenger.api.model.Group
+import com.wisekrakr.wisemessenger.api.model.UserProfile
 
 object RecyclerViewDataSetup {
 
@@ -72,6 +72,8 @@ object RecyclerViewDataSetup {
         context: Context
     ){
         chatMessageAdapter.setData(arrayChatMessages)
+
+//        recyclerView.smoothScrollToPosition(chatMessageAdapter.itemCount)
 
         recyclerView.layoutManager = LinearLayoutManager(
             context,

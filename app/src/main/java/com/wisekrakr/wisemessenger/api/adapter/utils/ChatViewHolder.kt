@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.adapter.utils
+package com.wisekrakr.wisemessenger.api.adapter.utils
 
 import android.content.Context
 import android.view.View

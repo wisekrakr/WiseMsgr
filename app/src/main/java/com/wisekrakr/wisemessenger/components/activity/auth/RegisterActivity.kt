@@ -8,14 +8,15 @@ import android.widget.EditText
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.messaging.FirebaseMessaging
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.HomeActivity
-import com.wisekrakr.wisemessenger.components.activity.profile.ProfileSettingsActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityRegisterBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.updateFirebaseUser
-import com.wisekrakr.wisemessenger.model.User
-import com.wisekrakr.wisemessenger.repository.UserRepository.saveUser
+import com.wisekrakr.wisemessenger.api.model.User
+import com.wisekrakr.wisemessenger.api.repository.UserRepository
+import com.wisekrakr.wisemessenger.api.repository.UserRepository.saveUser
 import com.wisekrakr.wisemessenger.utils.Actions.IntentActions.returnToActivityWithFlags
 import com.wisekrakr.wisemessenger.utils.Extensions
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
@@ -84,15 +85,22 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
                         if (!task.isSuccessful) return@addOnCompleteListener
 
                         if(task.isComplete){
-                            saveUserToFirebaseDatabase()
+                            val currentUserUid = firebaseAuth.currentUser!!.uid
+                            val deviceToken = FirebaseMessaging.getInstance().token
 
-                            Log.d(ACTIVITY_TAG, "Successfully created user: ${task.result?.user?.uid}")
+                            UserRepository.putDeviceTokenOnUser(currentUserUid, deviceToken.toString())
+                                .addOnCompleteListener {
+                                    saveUserToFirebaseDatabase()
 
-                            makeToast("Created account successfully!")
-                            startActivity(Intent(this@RegisterActivity, HomeActivity::class.java))
-                            finish()
+                                    Log.d(ACTIVITY_TAG, "Successfully created user: ${task.result?.user?.uid}")
+
+                                    makeToast("Created account successfully!")
+                                    startActivity(Intent(this@RegisterActivity, HomeActivity::class.java))
+                                    finish()
+                                }.addOnFailureListener {
+                                    makeToast("Failed set Device Token for user: ${it.message}")
+                                }
                         }
-
                     }
                     .addOnFailureListener {
                         makeToast("Failed to Register: ${it.message}")

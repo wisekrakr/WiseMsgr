@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.adapter
+package com.wisekrakr.wisemessenger.api.adapter
 
 import android.content.Context
 import android.util.Log
@@ -6,12 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.model.ChatRequest
-import com.wisekrakr.wisemessenger.model.nondata.RequestType
+import com.wisekrakr.wisemessenger.api.model.ChatRequest
+import com.wisekrakr.wisemessenger.api.model.nondata.RequestType
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 import org.ocpsoft.prettytime.PrettyTime
 

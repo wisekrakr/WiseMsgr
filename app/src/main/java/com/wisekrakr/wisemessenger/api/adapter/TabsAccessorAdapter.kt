@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.adapter
+package com.wisekrakr.wisemessenger.api.adapter
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

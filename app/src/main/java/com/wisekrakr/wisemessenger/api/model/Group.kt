@@ -1,8 +1,7 @@
-package com.wisekrakr.wisemessenger.model
+package com.wisekrakr.wisemessenger.api.model
 
 import java.io.Serializable
 import java.util.*
-import kotlin.collections.ArrayList
 
 data class Group(var groupName: String) : Serializable {
 

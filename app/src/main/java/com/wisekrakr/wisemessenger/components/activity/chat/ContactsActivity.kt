@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.wisekrakr.wisemessenger.adapter.ContactsAdapter
+import com.wisekrakr.wisemessenger.api.adapter.ContactsAdapter
 import com.wisekrakr.wisemessenger.components.EventManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
@@ -13,8 +13,8 @@ import com.wisekrakr.wisemessenger.components.activity.actions.SearchActivity
 import com.wisekrakr.wisemessenger.components.activity.profile.ProfileActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityContactsBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
-import com.wisekrakr.wisemessenger.model.UserProfile
-import com.wisekrakr.wisemessenger.repository.UserProfileRepository
+import com.wisekrakr.wisemessenger.api.model.UserProfile
+import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
 import kotlinx.coroutines.launch
 
 class ContactsActivity : BaseActivity<ActivityContactsBinding>() {

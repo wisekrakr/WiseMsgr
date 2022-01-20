@@ -7,22 +7,14 @@ import android.view.View
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.wisekrakr.wisemessenger.adapter.ChatRoomAdapter
-import com.wisekrakr.wisemessenger.adapter.ContactsAdapter
+import com.wisekrakr.wisemessenger.api.adapter.ChatRoomAdapter
 import com.wisekrakr.wisemessenger.components.EventManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
-import com.wisekrakr.wisemessenger.components.activity.HomeActivity
-import com.wisekrakr.wisemessenger.components.activity.chat.GroupChatActivity
 import com.wisekrakr.wisemessenger.components.activity.chat.PrivateChatActivity
 import com.wisekrakr.wisemessenger.databinding.FragmentPrivateChatBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
-import com.wisekrakr.wisemessenger.model.ChatRoom
-import com.wisekrakr.wisemessenger.model.Group
-import com.wisekrakr.wisemessenger.model.UserProfile
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.getChatRoom
-import com.wisekrakr.wisemessenger.repository.GroupRepository
-import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
+import com.wisekrakr.wisemessenger.api.model.ChatRoom
+import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoom
 import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
 import kotlinx.coroutines.launch
 

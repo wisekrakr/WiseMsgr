@@ -2,6 +2,7 @@ package com.wisekrakr.wisemessenger.components.activity.chat
 
 import android.annotation.SuppressLint
 import android.app.ActionBar
+import android.content.Intent
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -12,16 +13,17 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
-import com.wisekrakr.wisemessenger.adapter.ChatMessageAdapter
+import com.wisekrakr.wisemessenger.api.adapter.ChatMessageAdapter
 import com.wisekrakr.wisemessenger.databinding.ActivityGroupChatBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.components.fragments.GroupsFragment
-import com.wisekrakr.wisemessenger.model.ChatMessage
-import com.wisekrakr.wisemessenger.model.ChatRoom
-import com.wisekrakr.wisemessenger.model.Group
-import com.wisekrakr.wisemessenger.model.nondata.Conversationalist
-import com.wisekrakr.wisemessenger.repository.ChatMessageRepository.saveChatMessage
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.getChatRoom
+import com.wisekrakr.wisemessenger.api.model.ChatMessage
+import com.wisekrakr.wisemessenger.api.model.ChatRoom
+import com.wisekrakr.wisemessenger.api.model.Group
+import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
+import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.saveChatMessage
+import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoom
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.utils.Actions
 import com.wisekrakr.wisemessenger.utils.Constants
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG

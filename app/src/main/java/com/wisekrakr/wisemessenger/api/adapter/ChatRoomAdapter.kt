@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.adapter
+package com.wisekrakr.wisemessenger.api.adapter
 
 import android.content.Context
 import android.util.Log
@@ -13,11 +13,11 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
-import com.wisekrakr.wisemessenger.model.ChatMessage
-import com.wisekrakr.wisemessenger.model.ChatRoom
-import com.wisekrakr.wisemessenger.model.UserProfile
-import com.wisekrakr.wisemessenger.repository.ChatMessageRepository.getChatMessage
-import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfile
+import com.wisekrakr.wisemessenger.api.model.ChatMessage
+import com.wisekrakr.wisemessenger.api.model.ChatRoom
+import com.wisekrakr.wisemessenger.api.model.UserProfile
+import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.getChatMessage
+import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
 import com.wisekrakr.wisemessenger.utils.Actions
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.getLatestChatMessage

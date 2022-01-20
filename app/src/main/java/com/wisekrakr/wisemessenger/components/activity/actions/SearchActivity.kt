@@ -4,12 +4,12 @@ import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
-import com.wisekrakr.wisemessenger.adapter.ContactsAdapter
+import com.wisekrakr.wisemessenger.api.adapter.ContactsAdapter
 import com.wisekrakr.wisemessenger.components.EventManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.profile.ProfileActivity
 import com.wisekrakr.wisemessenger.databinding.ActivitySearchBinding
-import com.wisekrakr.wisemessenger.model.UserProfile
+import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import kotlinx.coroutines.launch
 

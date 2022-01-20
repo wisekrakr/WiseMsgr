@@ -1,6 +1,6 @@
-package com.wisekrakr.wisemessenger.model
+package com.wisekrakr.wisemessenger.api.model
 
-import com.wisekrakr.wisemessenger.model.nondata.RequestType
+import com.wisekrakr.wisemessenger.api.model.nondata.RequestType
 import java.io.Serializable
 import java.util.*
 

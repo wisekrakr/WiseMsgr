@@ -1,10 +1,8 @@
-package com.wisekrakr.wisemessenger.model
+package com.wisekrakr.wisemessenger.api.model
 
 import android.location.Location
-import android.location.LocationManager
 import java.io.Serializable
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 data class UserProfile(

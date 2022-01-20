@@ -7,7 +7,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import com.wisekrakr.wisemessenger.model.ChatMessage
+import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.abs

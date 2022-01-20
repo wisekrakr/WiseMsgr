@@ -6,30 +6,28 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.ImageView
 import androidx.appcompat.app.ActionBar
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.adapter.ChatMessageAdapter
+import com.wisekrakr.wisemessenger.api.adapter.ChatMessageAdapter
 import com.wisekrakr.wisemessenger.components.EventManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
-import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.components.fragments.PrivateChatFragment.Companion.CHAT_ROOM_KEY
 import com.wisekrakr.wisemessenger.components.fragments.PrivateChatFragment.Companion.CONTACT_KEY
 
 import com.wisekrakr.wisemessenger.databinding.ActivityPrivateChatBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
-import com.wisekrakr.wisemessenger.model.ChatMessage
-import com.wisekrakr.wisemessenger.model.ChatRoom
-import com.wisekrakr.wisemessenger.model.UserProfile
-import com.wisekrakr.wisemessenger.model.nondata.Conversationalist
-import com.wisekrakr.wisemessenger.repository.ChatMessageRepository.saveChatMessage
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.addMessageToChatRoom
-import com.wisekrakr.wisemessenger.repository.UserProfileRepository.getUserProfile
+import com.wisekrakr.wisemessenger.api.model.ChatMessage
+import com.wisekrakr.wisemessenger.api.model.ChatRoom
+import com.wisekrakr.wisemessenger.api.model.UserProfile
+import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
+import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.saveChatMessage
+import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.addMessageToChatRoom
+import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.utils.Actions
-import com.wisekrakr.wisemessenger.utils.Actions.IntentActions.returnToActivityWithFlags
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.launch
@@ -70,6 +68,7 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
+
 
     private fun getCurrentContact() {
         launch {
@@ -143,6 +142,9 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
                         binding.recyclerViewPrivateChat,
                         this@PrivateChatActivity
                     )
+
+                binding.recyclerViewPrivateChat.smoothScrollToPosition(chatMessageAdapter.itemCount)
+
             }
         }
     }
@@ -164,7 +166,7 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
         val layoutParams = ActionBar.LayoutParams(
             ActionBar.LayoutParams.WRAP_CONTENT,
             ActionBar.LayoutParams.WRAP_CONTENT,
-            Gravity.END
+            Gravity.START
         )
 
         circleImageView.layoutParams = layoutParams

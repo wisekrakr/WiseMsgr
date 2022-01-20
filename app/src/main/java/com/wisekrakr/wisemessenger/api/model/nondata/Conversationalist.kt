@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.model.nondata
+package com.wisekrakr.wisemessenger.api.model.nondata
 
 import java.io.Serializable
 

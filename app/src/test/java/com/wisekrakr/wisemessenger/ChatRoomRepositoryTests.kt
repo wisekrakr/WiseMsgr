@@ -2,8 +2,8 @@ package com.wisekrakr.wisemessenger
 
 import android.util.Log
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
-import com.wisekrakr.wisemessenger.model.ChatRoom
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository
+import com.wisekrakr.wisemessenger.api.model.ChatRoom
+import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 import org.junit.Test
 

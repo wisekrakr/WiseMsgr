@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.adapter
+package com.wisekrakr.wisemessenger.api.adapter
 
 import android.content.Context
 import android.util.Log
@@ -9,8 +9,8 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.adapter.utils.ChatViewHolder
-import com.wisekrakr.wisemessenger.model.ChatMessage
+import com.wisekrakr.wisemessenger.api.adapter.utils.ChatViewHolder
+import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 
 class ChatMessageAdapter : RecyclerView.Adapter<ChatViewHolder<*>>(){

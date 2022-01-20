@@ -1,9 +1,8 @@
-package com.wisekrakr.wisemessenger.model
+package com.wisekrakr.wisemessenger.api.model
 
-import com.wisekrakr.wisemessenger.model.nondata.Conversationalist
+import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
 import java.io.Serializable
 import java.util.*
-import kotlin.collections.ArrayList
 
 data class ChatMessage(
     var sender: Conversationalist?,

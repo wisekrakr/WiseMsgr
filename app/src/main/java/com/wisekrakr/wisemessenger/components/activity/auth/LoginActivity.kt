@@ -5,6 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.widget.EditText
+import com.google.firebase.messaging.FirebaseMessaging
+import com.wisekrakr.wisemessenger.api.repository.UserRepository.putDeviceTokenOnUser
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityLoginBinding
@@ -57,8 +59,17 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
                 .addOnCompleteListener { signIn ->
                     if (!signIn.isSuccessful) return@addOnCompleteListener
 
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    finish()
+                    val currentUserUid = firebaseAuth.currentUser!!.uid
+                    val deviceToken = FirebaseMessaging.getInstance().token
+
+                    putDeviceTokenOnUser(currentUserUid, deviceToken.toString())
+                        .addOnCompleteListener {
+                            startActivity(Intent(this, HomeActivity::class.java))
+                            finish()
+                        }.addOnFailureListener {
+                            makeToast("Failed set Device Token for user: ${it.message}")
+                        }
+
                 }
                 .addOnFailureListener {
                     makeToast("Failed to Authenticate: ${it.message}")

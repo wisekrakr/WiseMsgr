@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.adapter
+package com.wisekrakr.wisemessenger.api.adapter
 
 import android.content.Context
 import android.util.Log
@@ -9,7 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.model.UserProfile
+import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.utils.Actions.ImageActions.loadImage
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 

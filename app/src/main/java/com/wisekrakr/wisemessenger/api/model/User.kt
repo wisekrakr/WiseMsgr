@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.model
+package com.wisekrakr.wisemessenger.api.model
 
 import java.io.Serializable
 import java.util.*

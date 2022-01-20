@@ -1,10 +1,10 @@
-package com.wisekrakr.wisemessenger.repository
+package com.wisekrakr.wisemessenger.api.repository
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.rootReference
-import com.wisekrakr.wisemessenger.model.ChatMessage
-import com.wisekrakr.wisemessenger.model.ChatRoom
+import com.wisekrakr.wisemessenger.api.model.ChatMessage
+import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.utils.Constants
 
 object ChatRoomRepository {

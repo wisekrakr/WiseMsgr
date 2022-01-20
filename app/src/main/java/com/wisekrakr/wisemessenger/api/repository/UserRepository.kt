@@ -1,8 +1,7 @@
-package com.wisekrakr.wisemessenger.repository
+package com.wisekrakr.wisemessenger.api.repository
 
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.rootReference
 import com.wisekrakr.wisemessenger.utils.Constants
 import java.util.*
@@ -20,6 +19,14 @@ object UserRepository {
 
     fun saveUser(uid: String?): DatabaseReference {
         return rootReference.child(Constants.REF_USERS + "/${uid}")
+    }
+
+    fun putDeviceTokenOnUser(uid: String,token:String): Task<Void> {
+        return rootReference
+            .child(Constants.REF_USERS)
+            .child(uid)
+            .child("deviceToken")
+            .setValue(token)
     }
 
     fun updateUser(profileUid:String, username:String): Task<Void> {

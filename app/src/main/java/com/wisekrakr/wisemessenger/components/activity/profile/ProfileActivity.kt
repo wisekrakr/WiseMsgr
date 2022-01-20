@@ -13,13 +13,11 @@ import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
 import com.wisekrakr.wisemessenger.components.activity.actions.SearchActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityProfileBinding
-import com.wisekrakr.wisemessenger.model.ChatRoom
-import com.wisekrakr.wisemessenger.model.UserProfile
-import com.wisekrakr.wisemessenger.model.nondata.RequestType
-import com.wisekrakr.wisemessenger.repository.ChatRequestRepository.getChatRequestsForCurrentUser
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.deleteChatRoom
-import com.wisekrakr.wisemessenger.repository.ChatRoomRepository.getChatRoom
-import com.wisekrakr.wisemessenger.repository.UserProfileRepository.deleteChatRoomFromUserProfile
+import com.wisekrakr.wisemessenger.api.model.ChatRoom
+import com.wisekrakr.wisemessenger.api.model.UserProfile
+import com.wisekrakr.wisemessenger.api.model.nondata.RequestType
+import com.wisekrakr.wisemessenger.api.repository.ChatRequestRepository.getChatRequestsForCurrentUser
+import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoom
 import com.wisekrakr.wisemessenger.utils.Actions.ImageActions.loadImage
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
@@ -88,6 +86,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
                     ) {
                         if (requestType == RequestType.SENT) {
                             toggleButtons(false)
+
 
                             makeToast("Successfully requested chat!")
                         } else if (requestType == RequestType.CANCELLED) {
