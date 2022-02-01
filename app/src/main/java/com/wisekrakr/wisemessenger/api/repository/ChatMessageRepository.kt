@@ -22,4 +22,8 @@ object ChatMessageRepository {
         chatMessage.uid = ref.key.toString()
         return ref.setValue(chatMessage)
     }
+
+    fun deleteChatMessage(uid: String): Task<Void> {
+        return FirebaseUtils.rootReference.child(Constants.REF_MESSAGES).child(uid).removeValue()
+    }
 }

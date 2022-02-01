@@ -72,7 +72,6 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
      * cancel the chat request.
      */
     private fun onSendRequest(requestType: RequestType) {
-
         launch {
             onGetAllContactsOfCurrentUser{
                 Log.d(ACTIVITY_TAG, "SENDING REQUEST $it")
@@ -86,7 +85,6 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
                     ) {
                         if (requestType == RequestType.SENT) {
                             toggleButtons(false)
-
 
                             makeToast("Successfully requested chat!")
                         } else if (requestType == RequestType.CANCELLED) {
@@ -190,6 +188,5 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
         supportActionBar?.setHomeButtonEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
-
 
 }

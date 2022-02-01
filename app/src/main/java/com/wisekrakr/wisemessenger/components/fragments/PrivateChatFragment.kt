@@ -15,6 +15,8 @@ import com.wisekrakr.wisemessenger.databinding.FragmentPrivateChatBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoom
+import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
+import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
 import kotlinx.coroutines.launch
 
@@ -52,7 +54,7 @@ class PrivateChatFragment : BaseFragment<FragmentPrivateChatBinding>() {
 
     private fun showChatRoom(chatRoom: ChatRoom) {
         chatRoom.participants.forEach {
-            if(it.uid != firebaseAuth.uid){
+            if (it.uid != firebaseAuth.uid) {
                 val intent = Intent(requireContext(), PrivateChatActivity::class.java)
                     .putExtra(CHAT_ROOM_KEY, chatRoom)
                     .putExtra(CONTACT_KEY, it)
@@ -60,71 +62,55 @@ class PrivateChatFragment : BaseFragment<FragmentPrivateChatBinding>() {
                 activity?.finish()
             }
         }
-//        launch {
-//            getChatRoom(chatRoomUid)
-//                .addListenerForSingleValueEvent(object: ValueEventListener{
-//                    override fun onDataChange(snapshot: DataSnapshot) {
-//                        val cr = snapshot.getValue(ChatRoom::class.java)
-//
-//                        if(cr?.uid == chatRoomUid){
-//
-//                            cr.participants.forEach {
-//                                if(it.uid != firebaseAuth.uid){
-//                                    val intent = Intent(requireContext(), PrivateChatActivity::class.java)
-//                                        .putExtra(CHAT_ROOM_KEY, cr)
-//                                        .putExtra(CONTACT_KEY, it)
-//                                    startActivity(intent)
-//                                    activity?.finish()
-//                                }
-//                            }
-//
-//
-//                        }
-//                    }
-//
-//                    override fun onCancelled(error: DatabaseError) {
-//                        Log.d(FRAGMENT_TAG,
-//                            "Error in getting chat room for user ${error.message}")
-//                    }
-//                })
-//
-//        }
     }
 
     private fun onFindAllPrivateConversations() {
 
         launch {
-            EventManager.onGetChatRooms(firebaseAuth.uid!!) {
+            firebaseAuth.uid?.let {
+                EventManager.onGetChatRooms(it) { chatRoomId ->
+                    getChatRoom(chatRoomId).addValueEventListener(
+                        object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                val chatRoom = snapshot.getValue(ChatRoom::class.java)
 
-                getChatRoom(it).addListenerForSingleValueEvent(
-                    object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            val chatRoom = snapshot.getValue(ChatRoom::class.java)
+                                Log.d(FRAGMENT_TAG, chatRoom.toString())
 
-                            Log.d(FRAGMENT_TAG, chatRoom.toString())
+                                if (chatRoom != null) {
+                                    if (!conversations.contains(chatRoom)) {
+                                        conversations.add(chatRoom)
+                                    }
+                                }
 
-                            if (chatRoom != null)
-                                conversations.add(chatRoom)
+                                if (isAdded) {
+                                    RecyclerViewDataSetup.chatRooms(
+                                        chatRoomAdapter,
+                                        conversations,
+                                        viewBinding.recyclerViewPrivate,
+                                        requireContext()
+                                    )
+
+                                    viewBinding.tvNumberOfContactsPrivate.text =
+                                        conversations.size.toString()
+                                }
+
+                                if (chatRoom != null) {
+                                    chatRoomAdapter.showChatRoomMessages(chatRoom)
+                                }
 
 
-                            RecyclerViewDataSetup.chatRooms(
-                                chatRoomAdapter,
-                                conversations,
-                                viewBinding.recyclerViewPrivate,
-                                requireContext()
-                            )
+                            }
 
-                            viewBinding.tvNumberOfContactsPrivate.text = conversations.size.toString()
+                            override fun onCancelled(error: DatabaseError) {
+                                Log.d(FRAGMENT_TAG,
+                                    "Error in getting chat room for user ${error.message}")
+                            }
                         }
+                    )
+                }
 
-                        override fun onCancelled(error: DatabaseError) {
-                            Log.d(FRAGMENT_TAG,
-                                "Error in getting chat room for user ${error.message}")
-                        }
-                    }
-                )
             }
+
         }
     }
-
 }

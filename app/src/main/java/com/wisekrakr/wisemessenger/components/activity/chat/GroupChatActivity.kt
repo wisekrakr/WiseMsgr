@@ -2,7 +2,6 @@ package com.wisekrakr.wisemessenger.components.activity.chat
 
 import android.annotation.SuppressLint
 import android.app.ActionBar
-import android.content.Intent
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -20,10 +19,14 @@ import com.wisekrakr.wisemessenger.components.fragments.GroupsFragment
 import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.Group
+import com.wisekrakr.wisemessenger.api.model.Notification
 import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
+import com.wisekrakr.wisemessenger.api.model.nondata.NotificationType
 import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.saveChatMessage
+import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository
 import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoom
-import com.wisekrakr.wisemessenger.components.activity.HomeActivity
+import com.wisekrakr.wisemessenger.api.repository.NotificationRepository.saveNotification
+import com.wisekrakr.wisemessenger.components.ChatMessageUtils
 import com.wisekrakr.wisemessenger.utils.Actions
 import com.wisekrakr.wisemessenger.utils.Constants
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
@@ -59,6 +62,13 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
         binding.btnSendMessageGroupChat.setOnClickListener {
             onSendMessage()
         }
+
+        chatMessageAdapter.setLongClickListener(ChatMessageUtils.onChatMessageLongClick(
+            this,
+            chatRoom,
+            binding.txtEnterMessageGroupChat,
+            onShowMessages(chatRoom.uid)
+        ))
     }
 
     override fun supportBar() {
@@ -92,6 +102,22 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
                 addChatMessageToChatRoom(chatMessage)
                 binding.txtEnterMessageGroupChat.text.clear()
 
+                chatRoom.participants.forEach { conversationalist ->
+                    if(conversationalist.uid != firebaseAuth.currentUser?.uid){
+                        saveNotification(
+                            Notification(
+                                conversationalist.uid,
+                                conversationalist.username,
+                                firebaseAuth.currentUser?.uid.toString(),
+                                firebaseAuth.currentUser?.displayName.toString(),
+                                "New Message in group: ${chatRoom.uid}",
+                                NotificationType.MESSAGE
+                            )
+                        )
+                    }
+
+                }
+
             }
                 .addOnFailureListener {
                     Log.d(ACTIVITY_TAG,
@@ -105,14 +131,14 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
      */
     private fun addChatMessageToChatRoom(chatMessage: ChatMessage) {
         launch {
-//            addMessagesToChatRoom(chatRoom, chatMessage)
-//                .addOnSuccessListener {
-//                    Log.d(ACTIVITY_TAG, "Successfully saved Chat Messages to ChatRoom")
-//
-//                }.addOnFailureListener {
-//                    Log.d(ACTIVITY_TAG,
-//                        "Failed saving Chat Messages to ChatRoom: ${it.cause}")
-//                }
+            ChatRoomRepository.addMessageToChatRoom(chatRoom, chatMessage)
+                .addOnSuccessListener {
+                    Log.d(ACTIVITY_TAG, "Successfully saved Chat Messages to ChatRoom")
+
+                }.addOnFailureListener {
+                    Log.d(ACTIVITY_TAG,
+                        "Failed saving Chat Messages to ChatRoom: ${it.cause}")
+                }
 
         }
     }

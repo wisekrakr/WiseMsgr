@@ -114,7 +114,7 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
      * Set the new user value to the Database /users reference
      */
     private fun onUpdateUserProfile(profileMap: HashMap<String, String>) {
-
+        println(currentUser!!.uid)
         profileMap["uid"] = currentUser!!.uid
         profileMap["username"] = binding.txtUsernameSettings.text.toString()
         profileMap["status"] = binding.txtStatusSettings.text.toString()
@@ -125,9 +125,13 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
             profileMap["status"].toString(),
             profileMap["avatarUrl"].toString(),
             profileMap["bannerUrl"].toString(),
-            profile!!.chatRooms,
         )
+
         userProfile.updatedAt = Date()
+
+        if(profile?.chatRooms != null){
+            userProfile.chatRooms = profile?.chatRooms!!
+        }
 
         saveUserProfile(
             userProfile
@@ -176,8 +180,15 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
                 }
             }
 
-            profileMap["avatarUrl"] = profile!!.avatarUrl
-            profileMap["bannerUrl"] = profile!!.bannerUrl
+            if (profile != null){
+
+                profile?.let {
+                    profileMap["avatarUrl"] = it.avatarUrl
+                    profileMap["bannerUrl"] = it.bannerUrl
+                }
+            }
+
+
 
             onUpdateUserProfile(profileMap)
 

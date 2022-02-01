@@ -1,5 +1,6 @@
 package com.wisekrakr.wisemessenger.api.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.view.LayoutInflater
@@ -48,10 +49,14 @@ class ContactsAdapter : RecyclerView.Adapter<ContactsAdapter.ContactsViewHolder>
         Log.d(TAG, "Set data for ContactsAdapter: contacts size =  $itemCount")
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: ContactsViewHolder, position: Int) {
 
+
         holder.name.text = contacts[position].username
-        holder.status.text = contacts[position].status
+        holder.status.text = "Last seen: " + contacts[position].state["time"].toString() + " " +
+                contacts[position].state["date"].toString()
+
         loadImage(contacts[position].avatarUrl, holder.avatar)
 
         holder.itemView.rootView.setOnClickListener {

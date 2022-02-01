@@ -16,6 +16,9 @@ import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.api.model.nondata.RequestType
 import com.wisekrakr.wisemessenger.api.repository.ChatRequestRepository.getChatRequestsForCurrentUser
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
+import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
+import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
+import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import kotlinx.coroutines.launch
@@ -37,6 +40,7 @@ class ChatRequestsFragment : BaseFragment<FragmentChatRequestsBinding>() {
         showRequests()
 
         chatRequestsAdapter.setClickListener(onButtonClick)
+
     }
 
     private fun showRequests() {
@@ -60,17 +64,19 @@ class ChatRequestsFragment : BaseFragment<FragmentChatRequestsBinding>() {
                         }
                     }
 
-                    chatRequestsAdapter.setData(requests)
+                    if(isAdded){
+                        RecyclerViewDataSetup.requests(
+                            chatRequestsAdapter,
+                            requests,
+                            viewBinding.recyclerViewRequests,
+                            requireContext()
+                        )
 
-                    viewBinding.tvNumberOfRequestsRequests.text = requests.size.toString()
+                        viewBinding.tvNumberOfRequestsRequests.text = requests.size.toString()
+                    }
 
-                    viewBinding.recyclerViewRequests.layoutManager = LinearLayoutManager(
-                        requireContext(),
-                        LinearLayoutManager.VERTICAL,
-                        false
-                    )
-                    viewBinding.recyclerViewRequests.setHasFixedSize(true)
-                    viewBinding.recyclerViewRequests.adapter = chatRequestsAdapter
+
+
                 }
 
                 override fun onCancelled(error: DatabaseError) {

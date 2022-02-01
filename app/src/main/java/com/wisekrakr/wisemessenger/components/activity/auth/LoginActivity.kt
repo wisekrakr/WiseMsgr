@@ -67,7 +67,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
                             startActivity(Intent(this, HomeActivity::class.java))
                             finish()
                         }.addOnFailureListener {
-                            makeToast("Failed set Device Token for user: ${it.message}")
+                            makeToast("Failed setting Device Token for user: ${it.message}")
                         }
 
                 }

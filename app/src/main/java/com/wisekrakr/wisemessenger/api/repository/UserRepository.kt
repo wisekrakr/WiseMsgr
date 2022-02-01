@@ -1,9 +1,12 @@
 package com.wisekrakr.wisemessenger.api.repository
 
+import android.annotation.SuppressLint
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.rootReference
 import com.wisekrakr.wisemessenger.utils.Constants
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -21,7 +24,7 @@ object UserRepository {
         return rootReference.child(Constants.REF_USERS + "/${uid}")
     }
 
-    fun putDeviceTokenOnUser(uid: String,token:String): Task<Void> {
+    fun putDeviceTokenOnUser(uid: String, token: String): Task<Void> {
         return rootReference
             .child(Constants.REF_USERS)
             .child(uid)
@@ -29,8 +32,8 @@ object UserRepository {
             .setValue(token)
     }
 
-    fun updateUser(profileUid:String, username:String): Task<Void> {
-        val map : HashMap<String, Any> = hashMapOf()
+    fun updateUser(profileUid: String, username: String): Task<Void> {
+        val map: HashMap<String, Any> = hashMapOf()
         map["profileUid"] = profileUid
         map["username"] = username
         map["updatedAt"] = Date()
@@ -40,4 +43,6 @@ object UserRepository {
             .child(profileUid)
             .updateChildren(map as Map<String, Any>)
     }
+
+
 }

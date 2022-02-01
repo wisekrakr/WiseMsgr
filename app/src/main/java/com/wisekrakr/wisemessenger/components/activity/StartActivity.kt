@@ -18,13 +18,13 @@ import java.util.logging.Handler
 
 class StartActivity : BaseActivity<ActivityStartBinding>() {
 
-    override val bindingInflater: (LayoutInflater) -> ActivityStartBinding
-         = ActivityStartBinding::inflate
+    override val bindingInflater: (LayoutInflater) -> ActivityStartBinding =
+        ActivityStartBinding::inflate
 
 
     override fun setup() {
 
-        if(firebaseAuth.uid == null){
+        if (firebaseAuth.uid == null) {
             binding.btnRegisterStart.setOnClickListener {
                 startActivity(Intent(this, RegisterActivity::class.java))
             }
@@ -32,7 +32,7 @@ class StartActivity : BaseActivity<ActivityStartBinding>() {
             binding.btnLoginStart.setOnClickListener {
                 startActivity(Intent(this, LoginActivity::class.java))
             }
-        }else{
+        } else {
             binding.btnRegisterStart.visibility = View.INVISIBLE
             binding.btnLoginStart.visibility = View.INVISIBLE
         }
@@ -53,14 +53,12 @@ class StartActivity : BaseActivity<ActivityStartBinding>() {
 
         val handler = android.os.Handler()
         handler.postDelayed({
-            if(firebaseAuth != null){
-                val user: FirebaseUser? = firebaseAuth.currentUser
-                user?.let {
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    makeToast("Welcome Back ${user.displayName}")
-                }
+            val user: FirebaseUser? = firebaseAuth.currentUser
+            user?.let {
+                startActivity(Intent(this, HomeActivity::class.java))
+                makeToast("Welcome Back ${user.displayName}")
             }
-        },3000)
+        }, 3000)
 
 
     }
@@ -70,12 +68,12 @@ class StartActivity : BaseActivity<ActivityStartBinding>() {
         return false
     }
 
-    private fun showAnimation(){
+    private fun showAnimation() {
         val animatorLogo: ObjectAnimator = ObjectAnimator.ofFloat(
-            binding.imageView2,"y",400f
+            binding.imageView2, "y", 400f
         )
         val animatorName: ObjectAnimator = ObjectAnimator.ofFloat(
-            binding.textView3,"x",830f
+            binding.textView3, "x", 830f
         )
 
         animatorLogo.duration = 2000

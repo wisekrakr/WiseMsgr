@@ -1,11 +1,16 @@
 package com.wisekrakr.wisemessenger.api.repository
 
+import android.annotation.SuppressLint
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.rootReference
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
+import com.wisekrakr.wisemessenger.api.model.Status
 import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.utils.Constants
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.HashMap
 
 object UserProfileRepository {
 
@@ -47,6 +52,30 @@ object UserProfileRepository {
             .child(Constants.REF_USER_CHAT_ROOMS)
             .child(chatRoom.uid)
             .setValue(chatRoom.isPrivate)
+    }
+
+
+    @SuppressLint("SimpleDateFormat")
+    fun updateUserConnectivityStatus(uid: String, state: String) : Task<Void> {
+
+        val calendar: Calendar = Calendar.getInstance()
+        val currentDate = SimpleDateFormat("dd MMM, yyyy")
+        val saveCurrentDate : String = currentDate.format(calendar.time)
+        val currentTime = SimpleDateFormat("hh:mm:ss")
+        val saveCurrentTime : String = currentTime.format(calendar.time)
+
+
+        return rootReference.child(Constants.REF_USER_PROFILES)
+            .child(uid)
+            .child("state")
+            .setValue(
+                Status(
+                    saveCurrentTime,
+                    saveCurrentDate,
+                    state
+                )
+            )
+
     }
 
 }

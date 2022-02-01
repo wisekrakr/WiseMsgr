@@ -8,27 +8,23 @@ import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.api.model.*
 import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
+import com.wisekrakr.wisemessenger.api.model.nondata.NotificationType
 import com.wisekrakr.wisemessenger.api.model.nondata.RequestType
-import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository
-import com.wisekrakr.wisemessenger.api.repository.ChatRequestRepository
-import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository
+import com.wisekrakr.wisemessenger.api.repository.*
 import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoom
 import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoomMessages
 import com.wisekrakr.wisemessenger.api.repository.GroupRepository.getGroupsUser
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfileChatRooms
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfiles
+import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
+import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.utils.Constants.Companion.STORAGE_AVATARS
 import com.wisekrakr.wisemessenger.utils.Constants.Companion.STORAGE_BANNERS
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 object EventManager {
 
@@ -38,13 +34,11 @@ object EventManager {
     ) {
         getUserProfiles()
             .addListenerForSingleValueEvent(object : ValueEventListener {
-
                 override fun onDataChange(snapshot: DataSnapshot) {
-
                     snapshot.children.forEach {
                         val profile = it.getValue(UserProfile::class.java)!!
 
-                        if (profile.uid != FirebaseUtils.firebaseAuth.uid) {
+                        if (profile.uid != firebaseAuth.uid) {
                             list.add(profile)
                         }
                     }
@@ -65,7 +59,6 @@ object EventManager {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val userProfile = snapshot.getValue(UserProfile::class.java)
-
 
                     if (userProfile!!.chatRooms.isNotEmpty()) {
 
@@ -199,7 +192,7 @@ object EventManager {
             val fileName = UUID.randomUUID().toString()
             val avatarRef = FirebaseUtils.firebaseStorage.getReference("/$storageRef/$fileName")
 
-            avatarRef.putFile(selectedAvatar!!)
+            avatarRef.putFile(selectedAvatar)
                 .addOnSuccessListener { it ->
 
                     Log.d(TAG, "Successfully uploaded image: ${it.metadata?.path}")
@@ -248,6 +241,48 @@ object EventManager {
         )
     }
 
+    fun onPushNotification(
+        userProfileUid: String,
+        userProfileUsername: String,
+        currentUserUid: String,
+        currentUsername: String,
+        message: String,
+        notificationType: NotificationType,
+    ) {
+        NotificationRepository.saveNotification(
+            Notification(
+                userProfileUid,
+                userProfileUsername,
+                currentUserUid,
+                currentUsername,
+                message,
+                notificationType
+            )
+        ).addOnCompleteListener { notification ->
+            if (notification.isSuccessful)
+                Log.d(TAG, "Successfully pushed notification")
+        }
+    }
+
+    fun onRemovingChatMessage(
+        chatMessage: ChatMessage,
+        chatRoom: ChatRoom,
+        context: Context,
+    ) {
+        ChatMessageRepository.deleteChatMessage(chatMessage.uid)
+            .addOnCompleteListener {
+                Toast.makeText(context,
+                    "Message Removed",
+                    Toast.LENGTH_SHORT).show()
+
+
+                ChatRoomRepository.removeMessageFromChatRoom(chatRoom, chatMessage.uid)
+            }.addOnFailureListener {
+                Toast.makeText(context, "Message could not be removed", Toast.LENGTH_SHORT)
+                    .show()
+            }
+    }
+
     fun onEndingConversation(
         chatRoom: ChatRoom,
         context: Context,
@@ -260,6 +295,10 @@ object EventManager {
                 }.addOnFailureListener {
                     Log.d(TAG, "Failure in removing chat room from current user profile")
                 }
+        }
+
+        chatRoom.messages.forEach {
+            ChatMessageRepository.deleteChatMessage(it.key)
         }
 
         ChatRoomRepository.deleteChatRoom(chatRoom.uid)
@@ -338,9 +377,19 @@ object EventManager {
                             userProfileUsername,
                             RequestType.RECEIVED
                         )
-                    ).addOnCompleteListener {
-                        completeListener()
+                    ).addOnCompleteListener { request ->
+                        if (request.isSuccessful)
+                            completeListener()
                     }
+
+                    onPushNotification(
+                        userProfileUid,
+                        userProfileUsername,
+                        currentUserUid,
+                        currentUsername,
+                        "Chat Request from $currentUsername",
+                        NotificationType.CHAT_REQUEST
+                    )
                 }
             }
         }

@@ -110,6 +110,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
     }
 
     private fun saveUserToFirebaseDatabase() {
+        Log.d(ACTIVITY_TAG, "saving user to firebase ${firebaseAuth.uid}")
 
         saveUser(firebaseAuth.uid).addListenerForSingleValueEvent(object :
             ValueEventListener {

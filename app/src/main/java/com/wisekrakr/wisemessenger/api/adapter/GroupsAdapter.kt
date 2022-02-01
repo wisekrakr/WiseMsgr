@@ -18,7 +18,7 @@ class GroupsAdapter : RecyclerView.Adapter<GroupsAdapter.GroupsViewHolder>(){
 
     private var listener: OnItemClickListener? = null
     private var context: Context? = null
-    private var groups = ArrayList<Any?>() as ArrayList<Group>
+    private var groups = ArrayList<Group>()
 
     class GroupsViewHolder(view: View) : RecyclerView.ViewHolder(view)  {
         val name: TextView = view.findViewById(R.id.tv_group_name)

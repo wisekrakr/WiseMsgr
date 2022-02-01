@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -17,19 +18,22 @@ import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.getChatMessage
+import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
 import com.wisekrakr.wisemessenger.utils.Actions
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.getLatestChatMessage
 import org.ocpsoft.prettytime.PrettyTime
 import kotlin.collections.ArrayList
+import kotlin.concurrent.thread
 
 class ChatRoomAdapter : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>(){
 
+    private lateinit var holder: ChatRoomViewHolder
     private var listener: OnItemClickListener? = null
     private var context: Context? = null
-    private var chatRooms = ArrayList<Any?>() as ArrayList<ChatRoom>
-    private var messages = ArrayList<Any?>() as ArrayList<ChatMessage>
+    private var chatRooms = ArrayList<ChatRoom>()
+    private var messages = ArrayList<ChatMessage>()
 
     class ChatRoomViewHolder(view: View) : RecyclerView.ViewHolder(view)  {
         val contact: TextView = view.findViewById(R.id.tv_contact_name_private)
@@ -59,15 +63,17 @@ class ChatRoomAdapter : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>
 
 
     override fun onBindViewHolder(holder: ChatRoomViewHolder, position: Int) {
+        this.holder = holder
         val chatRoom = chatRooms[position]
 
         showChatRoomParticipants(chatRoom, holder)
-        showChatRoomMessages(chatRoom, holder)
+//        showChatRoomMessages(chatRoom, holder)
 
         holder.itemView.rootView.setOnClickListener {
             listener!!.onClick(chatRooms[position])
         }
     }
+
 
     /**
      * Run through all chat room participants, the one that is not the current user, get its profile.
@@ -93,17 +99,21 @@ class ChatRoomAdapter : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>
     }
 
     /**
+     * Since the chatroom has to be updated with every new message, this method has to be public for use
+     * in the activity or fragment where the chatroom list gets updated.
+     *
      * Run through all chat room chat message uid's and add them to a array list, to ultimately
      * find the latest delivered chat message.
      * This way we order the chat messages by latest date.
      */
-    private fun showChatRoomMessages(chatRoom: ChatRoom, holder: ChatRoomViewHolder){
+    fun showChatRoomMessages(chatRoom: ChatRoom){
+
         chatRoom.messages.keys.forEach {
-            getChatMessage(it).addListenerForSingleValueEvent(object : ValueEventListener{
+            getChatMessage(it).addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val chatMessage = snapshot.getValue(ChatMessage::class.java)
 
-                    if(chatMessage != null){
+                    if (chatMessage != null) {
                         messages.add(chatMessage)
 
                         showLatestMessage(messages, holder)
@@ -120,9 +130,11 @@ class ChatRoomAdapter : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>
         if(messages.isNotEmpty()){
             val lastMsg = getLatestChatMessage(messages)
 
-            holder.message.text = lastMsg!!.message
-            val p = PrettyTime()
-            holder.date.text = p.format(lastMsg.date)
+            if(lastMsg != null){
+                holder.message.text = lastMsg.message
+                val p = PrettyTime()
+                holder.date.text = p.format(lastMsg.date)
+            }
         }
     }
 

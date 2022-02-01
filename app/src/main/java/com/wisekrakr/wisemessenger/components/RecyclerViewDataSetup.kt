@@ -3,14 +3,8 @@ package com.wisekrakr.wisemessenger.components
 import android.content.Context
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.wisekrakr.wisemessenger.api.adapter.ChatMessageAdapter
-import com.wisekrakr.wisemessenger.api.adapter.ChatRoomAdapter
-import com.wisekrakr.wisemessenger.api.adapter.ContactsAdapter
-import com.wisekrakr.wisemessenger.api.adapter.GroupsAdapter
-import com.wisekrakr.wisemessenger.api.model.ChatMessage
-import com.wisekrakr.wisemessenger.api.model.ChatRoom
-import com.wisekrakr.wisemessenger.api.model.Group
-import com.wisekrakr.wisemessenger.api.model.UserProfile
+import com.wisekrakr.wisemessenger.api.adapter.*
+import com.wisekrakr.wisemessenger.api.model.*
 
 object RecyclerViewDataSetup {
 
@@ -82,6 +76,23 @@ object RecyclerViewDataSetup {
         )
         recyclerView.setHasFixedSize(true)
         recyclerView.adapter = chatMessageAdapter
+    }
+
+    fun requests(
+        chatRequestsAdapter: ChatRequestsAdapter,
+        arrayChatRequests: ArrayList<ChatRequest>,
+        recyclerView: RecyclerView,
+        context: Context
+    ){
+        chatRequestsAdapter.setData(arrayChatRequests)
+
+        recyclerView.layoutManager = LinearLayoutManager(
+            context,
+            LinearLayoutManager.VERTICAL,
+            false
+        )
+        recyclerView.setHasFixedSize(true)
+        recyclerView.adapter = chatRequestsAdapter
     }
 
 }

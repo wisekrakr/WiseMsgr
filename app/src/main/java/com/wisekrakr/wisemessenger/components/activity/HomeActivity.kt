@@ -1,5 +1,6 @@
 package com.wisekrakr.wisemessenger.components.activity
 
+import android.app.Application
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,16 +13,20 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.api.adapter.TabsAccessorAdapter
+import com.wisekrakr.wisemessenger.api.model.User
+import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
+import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.updateUserConnectivityStatus
+import com.wisekrakr.wisemessenger.api.repository.UserRepository.getCurrentUser
 import com.wisekrakr.wisemessenger.components.activity.profile.ProfileSettingsActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityHomeBinding
+import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.updateFirebaseUser
-import com.wisekrakr.wisemessenger.api.model.User
-import com.wisekrakr.wisemessenger.api.repository.UserRepository.getCurrentUser
 import com.wisekrakr.wisemessenger.utils.Actions.IntentActions.returnToActivityWithFlags
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import kotlinx.coroutines.launch
+import java.util.*
 
 class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
@@ -36,12 +41,12 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
     override fun setup() {
         val user: FirebaseUser? = firebaseAuth.currentUser
-
         if (user?.uid == null) {
             returnToActivityWithFlags(StartActivity::class.simpleName.toString())
         } else {
             getCurrentUser(user)
         }
+
     }
 
     override fun supportBar() {
@@ -60,8 +65,9 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
                             updateFirebaseUser(currentUser!!.username)
                             makeToast("Welcome back ${currentUser!!.username}")
 
-                            if(currentUser!!.profileUid.isBlank()){
-                                startActivity(Intent(this@HomeActivity, ProfileSettingsActivity::class.java))
+                            if (currentUser!!.profileUid.isBlank()) {
+                                startActivity(Intent(this@HomeActivity,
+                                    ProfileSettingsActivity::class.java))
                                 finish()
                             }
 
@@ -113,4 +119,5 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
         }.attach()
     }
+
 }

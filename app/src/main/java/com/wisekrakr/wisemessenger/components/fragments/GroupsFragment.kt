@@ -20,6 +20,9 @@ import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.Group
 import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoom
 import com.wisekrakr.wisemessenger.api.repository.GroupRepository.getGroupsUser
+import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
+import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
+import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
 import kotlinx.coroutines.launch
 
@@ -61,15 +64,18 @@ class GroupsFragment : BaseFragment<FragmentGroupsBinding>() {
                 currentUser!!.uid,
                 arrayGroups
             ) {
-                RecyclerViewDataSetup
-                    .groups(
-                        groupsAdapter,
-                        it,
-                        viewBinding.recyclerViewGroups,
-                        requireContext()
-                    )
+                if(isAdded){
+                    RecyclerViewDataSetup
+                        .groups(
+                            groupsAdapter,
+                            it,
+                            viewBinding.recyclerViewGroups,
+                            requireContext()
+                        )
 
-                viewBinding.tvNumberOfContactsGroups.text = arrayGroups.size.toString()
+                    viewBinding.tvNumberOfContactsGroups.text = arrayGroups.size.toString()
+                }
+
             }
         }
     }

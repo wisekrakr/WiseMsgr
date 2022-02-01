@@ -1,13 +1,13 @@
 package com.wisekrakr.wisemessenger.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.wisekrakr.wisemessenger.api.model.ChatMessage
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.abs
@@ -40,22 +40,12 @@ object Extensions {
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 
-    fun notification(
-        context: Context,
-        title: String?,
-        message: String?,
-    ) {
-        val builder: AlertDialog.Builder =
-            AlertDialog.Builder(context, com.wisekrakr.wisemessenger.R.style.AlertDialog)
+    @SuppressLint("SimpleDateFormat")
+    fun getBeautifiedTime(date: Date): String {
 
-        builder
-            .setTitle(title)
-            .setMessage(message)
-            .setCancelable(false)
-            .setNegativeButton("CANCEL") { dialog, which ->
-                dialog.cancel()
-            }
-        return builder.create().show()
+        val currentTime = SimpleDateFormat("HH:mm k, dd MMM, yyyy")
+
+        return currentTime.format(date)
     }
 
     fun isNotEmpty(arrayOfInputs: Array<EditText>): Boolean {
@@ -86,6 +76,7 @@ object Extensions {
         var minDiff: Long = -1
         val currentTime = Date().time
         var chatMessage: ChatMessage? = null
+
         for (msg in messages) {
 
             val diff = abs(currentTime - msg.date.time)
@@ -94,6 +85,7 @@ object Extensions {
                 chatMessage = msg
             }
         }
+
         return chatMessage
     }
 }

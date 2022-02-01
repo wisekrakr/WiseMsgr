@@ -11,13 +11,14 @@ data class UserProfile(
     var status: String = "",
     var avatarUrl: String = "",
     var bannerUrl: String = "",
-    var chatRooms: HashMap<String, Boolean> = hashMapOf(),
 ) : Serializable {
 
     val createdAt: Date = Date()
     var updatedAt: Date? = null
+    var chatRooms: HashMap<String, Boolean> = hashMapOf()
 
     var location: Location? =  null//Location(LocationManager.GPS_PROVIDER)
+    var state : HashMap<String, String> = hashMapOf()
 
 
     constructor() : this("", "", "")

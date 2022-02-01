@@ -1,6 +1,6 @@
 package com.wisekrakr.wisemessenger.components.activity.chat
 
-import android.content.Intent
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -11,24 +11,27 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.api.adapter.ChatMessageAdapter
+import com.wisekrakr.wisemessenger.api.model.ChatMessage
+import com.wisekrakr.wisemessenger.api.model.ChatRoom
+import com.wisekrakr.wisemessenger.api.model.Notification
+import com.wisekrakr.wisemessenger.api.model.UserProfile
+import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
+import com.wisekrakr.wisemessenger.api.model.nondata.NotificationType
+import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.saveChatMessage
+import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.addMessageToChatRoom
+import com.wisekrakr.wisemessenger.api.repository.NotificationRepository.saveNotification
+import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
+import com.wisekrakr.wisemessenger.components.ChatMessageUtils
 import com.wisekrakr.wisemessenger.components.EventManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.fragments.PrivateChatFragment.Companion.CHAT_ROOM_KEY
 import com.wisekrakr.wisemessenger.components.fragments.PrivateChatFragment.Companion.CONTACT_KEY
-
 import com.wisekrakr.wisemessenger.databinding.ActivityPrivateChatBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
-import com.wisekrakr.wisemessenger.api.model.ChatMessage
-import com.wisekrakr.wisemessenger.api.model.ChatRoom
-import com.wisekrakr.wisemessenger.api.model.UserProfile
-import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
-import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.saveChatMessage
-import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.addMessageToChatRoom
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
-import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.utils.Actions
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
+import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.launch
 
@@ -61,7 +64,16 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
         binding.btnSendMessagePrivateChat.setOnClickListener {
             onSendMessage()
         }
+
+        chatMessageAdapter.setLongClickListener(ChatMessageUtils.onChatMessageLongClick(
+            this,
+            chatRoom,
+            binding.txtEnterMessagePrivateChat,
+            onShowMessages()
+        ))
     }
+
+
 
     override fun supportBar() {
         supportActionBar?.title = contact.username
@@ -112,8 +124,23 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
                     addMessageToChatRoom(chatRoom, chatMessage)
                         .addOnSuccessListener {
                             Log.d(ACTIVITY_TAG, "Successfully saved Chat Messages to ChatRoom")
+
                             binding.txtEnterMessagePrivateChat.text.clear()
 
+                            chatRoom.participants.forEach { conversationalist ->
+                                if(conversationalist.uid != firebaseAuth.currentUser?.uid){
+                                    saveNotification(
+                                        Notification(
+                                            conversationalist.uid,
+                                            conversationalist.username,
+                                            firebaseAuth.currentUser?.uid.toString(),
+                                            firebaseAuth.currentUser?.displayName.toString(),
+                                            chatMessage.message,
+                                            NotificationType.MESSAGE
+                                        )
+                                    )
+                                }
+                            }
                         }.addOnFailureListener {
                             Log.d(ACTIVITY_TAG,
                                 "Failed saving Chat Messages to ChatRoom: ${it.cause}")
@@ -124,6 +151,8 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
                         Log.d(ACTIVITY_TAG,
                             "Failed saving Chat Message to database: ${it.cause}")
                     }
+            }else{
+                makeToast("You cannot send empty messages.")
             }
         }
     }
@@ -144,12 +173,12 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
                     )
 
                 binding.recyclerViewPrivateChat.smoothScrollToPosition(chatMessageAdapter.itemCount)
-
             }
         }
     }
 
 
+    @SuppressLint("ResourceType")
     @SuppressWarnings
     private fun showContactAvatarInActionBar(contact: UserProfile) {
         supportActionBar?.displayOptions =
@@ -171,6 +200,8 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
 
         circleImageView.layoutParams = layoutParams
         supportActionBar?.customView = circleImageView
+
+
     }
 
 

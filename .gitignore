@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+Notifications/node_modules
+Notifications/package-lock.json
+Notifications/firebase-debug.log

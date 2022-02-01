@@ -5,13 +5,14 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <meta-data
         android:name="com.google.firebase.messaging.default_notification_icon"
         android:resource="@drawable/logo_small" />
-
     <meta-data
         android:name="com.google.firebase.messaging.default_notification_color"
         android:resource="@color/primaryColor" />
@@ -28,20 +29,12 @@
         <activity android:name=".components.activity.actions.SearchActivity" />
         <activity android:name=".components.activity.auth.LoginMobileActivity" />
         <activity android:name=".components.activity.actions.CreateGroupActivity" />
-        <activity android:name=".components.activity.chat.GroupChatActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />
-        </activity>
+        <activity android:name=".components.activity.chat.GroupChatActivity"/>
         <activity android:name=".components.activity.profile.ProfileSettingsActivity" />
-        <activity android:name=".components.activity.chat.PrivateChatActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />
-        </activity>
+        <activity android:name=".components.activity.chat.PrivateChatActivity"/>
         <activity android:name=".components.activity.auth.LoginActivity" />
         <activity android:name=".components.activity.auth.RegisterActivity" />
-        <activity android:name=".components.activity.StartActivity"/>
+        <activity android:name=".components.activity.StartActivity" />
         <activity android:name=".components.activity.HomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,15 +43,25 @@
             </intent-filter>
         </activity>
 
-        <service
-            android:name=".firebase.MyFirebaseMessagingService"
-            android:exported="false"
-            tools:ignore="Instantiatable">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-    </application>
+<!--        <service-->
+<!--            android:name=".firebase.MyFirebaseMessagingService"-->
+<!--            android:exported="false"-->
+<!--            tools:ignore="Instantiatable">-->
+<!--            <intent-filter>-->
+<!--                <action android:name="com.google.firebase.MESSAGING_EVENT" />-->
+<!--            </intent-filter>-->
+<!--            <intent-filter>-->
+<!--                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>-->
+<!--            </intent-filter>-->
+<!--        </service>-->
 
+
+<!--        <meta-data-->
+<!--            android:name="com.google.firebase.messaging.default_notification_icon"-->
+<!--            android:resource="@drawable/icon_chat" />-->
+<!--        <meta-data-->
+<!--            android:name="com.google.firebase.messaging.default_notification_color"-->
+<!--            android:resource="@color/primaryColor" />-->
+    </application>
 
 </manifest>

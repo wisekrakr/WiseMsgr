@@ -38,4 +38,15 @@ object ChatRoomRepository {
             .setValue(chatMessage.chatRoomUid)
 
     }
+
+    fun removeMessageFromChatRoom(chatRoom: ChatRoom, uid: String): Task<Void> {
+
+        return rootReference
+            .child(Constants.REF_CHAT_ROOMS)
+            .child(chatRoom.uid)
+            .child(Constants.REF_MESSAGES)
+            .child(uid)
+            .removeValue()
+
+    }
 }

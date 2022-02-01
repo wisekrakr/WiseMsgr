@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewbinding.ViewBinding
+import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
+import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +21,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), CoroutineScope {
 
     // This property must be nullable to prevent view leaks
     // Never forget that fragments outlive their views !
-    private var mutableViewBinding: VB? = null
+    private var mutableViewBinding : VB? = null
 
     // This property gives us a not nullable view binding for simpler use
     protected val viewBinding: VB get() = mutableViewBinding!!
@@ -29,6 +31,12 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), CoroutineScope {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mutableViewBinding = bindingInflater.invoke(inflater, container, false)
+
+        UserProfileRepository.updateUserConnectivityStatus(
+            FirebaseUtils.firebaseAuth.currentUser?.uid.toString(),
+            "Online"
+        )
+
         return viewBinding.root
     }
 
@@ -48,6 +56,7 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), CoroutineScope {
         super.onDestroy()
         job.cancel()
 //        viewBinding = null
+
     }
 
     override fun onDestroyView() {
