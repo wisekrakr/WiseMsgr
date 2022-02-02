@@ -1,6 +1,5 @@
 package com.wisekrakr.wisemessenger.components.activity
 
-import android.app.Application
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,7 +14,6 @@ import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.api.adapter.TabsAccessorAdapter
 import com.wisekrakr.wisemessenger.api.model.User
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.updateUserConnectivityStatus
 import com.wisekrakr.wisemessenger.api.repository.UserRepository.getCurrentUser
 import com.wisekrakr.wisemessenger.components.activity.profile.ProfileSettingsActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityHomeBinding
@@ -66,8 +64,14 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
                             makeToast("Welcome back ${currentUser!!.username}")
 
                             if (currentUser!!.profileUid.isBlank()) {
-                                startActivity(Intent(this@HomeActivity,
-                                    ProfileSettingsActivity::class.java))
+                                val username = intent.getStringExtra("username")
+
+                                val i = Intent(this@HomeActivity,
+                                    ProfileSettingsActivity::class.java)
+
+                                i.putExtra("username", username)
+
+                                startActivity(i)
                                 finish()
                             }
 
@@ -120,4 +124,12 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
         }.attach()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+
+        UserProfileRepository.updateUserConnectivityStatus(
+            firebaseAuth.currentUser?.uid.toString(),
+            "Offline"
+        )
+    }
 }

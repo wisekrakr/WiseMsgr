@@ -10,7 +10,7 @@ object RecyclerViewDataSetup {
 
     fun contacts(
         contactsAdapter: ContactsAdapter,
-        contacts: ArrayList<UserProfile>,
+        contacts: List<UserProfile>,
         recyclerView: RecyclerView,
         context: Context
     ){

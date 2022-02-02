@@ -48,7 +48,7 @@
         android:id="@+id/img_status"
         android:layout_width="22dp"
         android:layout_height="21dp"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@+id/tv_contact_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.214"

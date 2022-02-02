@@ -20,7 +20,6 @@ class ChatRequestsAdapter : RecyclerView.Adapter<ChatRequestsAdapter.RequestsVie
     private var context: Context? = null
     private var chatRequests = ArrayList<ChatRequest>()
 
-
     class RequestsViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         val name: TextView = view.findViewById(R.id.tv_request_name)
@@ -52,7 +51,6 @@ class ChatRequestsAdapter : RecyclerView.Adapter<ChatRequestsAdapter.RequestsVie
     override fun onBindViewHolder(holder: RequestsViewHolder, position: Int) {
         val chatRequest = chatRequests[position]
 
-
         if(chatRequest.requestType == RequestType.RECEIVED){
             holder.name.text = chatRequest.toUsername
             holder.date.text = chatRequest.createdAt.toString()
@@ -72,7 +70,6 @@ class ChatRequestsAdapter : RecyclerView.Adapter<ChatRequestsAdapter.RequestsVie
 
             holder.btnAccept.visibility = View.INVISIBLE
             holder.btnAccept.isEnabled = false
-
 
             holder.btnIgnore.text = "Cancel Request"
             holder.btnIgnore.setOnClickListener {

@@ -19,14 +19,20 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>() {
     private lateinit var contactsAdapter: ContactsAdapter
     private var contacts: ArrayList<UserProfile> = arrayListOf()
 
-
     override fun setup() {
 
         contactsAdapter = ContactsAdapter()
 
-        onShowContacts()
 
         contactsAdapter.setClickListener(onSelectContact)
+
+        binding.btnSearch.setOnClickListener{
+            contacts.clear()
+
+            val name = binding.etFriendNameSearch.text.toString()
+
+            onShowContacts(name)
+        }
     }
 
     companion object {
@@ -49,9 +55,9 @@ class SearchActivity : BaseActivity<ActivitySearchBinding>() {
         finish()
     }
 
-    private fun onShowContacts() {
+    private fun onShowContacts(value: String) {
         launch {
-            EventManager.onGetAllUsers(contacts) {
+            EventManager.onGetUserByChildValue(value, contacts) {
                 RecyclerViewDataSetup.contacts(
                     contactsAdapter,
                     contacts,

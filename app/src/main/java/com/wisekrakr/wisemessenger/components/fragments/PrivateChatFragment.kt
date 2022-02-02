@@ -15,8 +15,6 @@ import com.wisekrakr.wisemessenger.databinding.FragmentPrivateChatBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoom
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
 import kotlinx.coroutines.launch
 
@@ -95,7 +93,7 @@ class PrivateChatFragment : BaseFragment<FragmentPrivateChatBinding>() {
                                 }
 
                                 if (chatRoom != null) {
-                                    chatRoomAdapter.showChatRoomMessages(chatRoom)
+                                    chatRoomAdapter.showChatRoomMessages(chatRoom, null)
                                 }
 
 

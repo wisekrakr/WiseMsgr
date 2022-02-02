@@ -16,4 +16,5 @@
     <color name="bgColor">#2196F3</color>
     <color name="green">#36F321</color>
     <color name="red">#F4030B</color>
+    <color name="transparent">#00FFFFFF</color>
 </resources>

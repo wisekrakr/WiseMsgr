@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.database.ChildEventListener
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -18,14 +17,12 @@ import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.getChatMessage
-import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
 import com.wisekrakr.wisemessenger.utils.Actions
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.getLatestChatMessage
 import org.ocpsoft.prettytime.PrettyTime
 import kotlin.collections.ArrayList
-import kotlin.concurrent.thread
 
 class ChatRoomAdapter : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>(){
 
@@ -67,7 +64,7 @@ class ChatRoomAdapter : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>
         val chatRoom = chatRooms[position]
 
         showChatRoomParticipants(chatRoom, holder)
-//        showChatRoomMessages(chatRoom, holder)
+        showChatRoomMessages(chatRoom, holder)
 
         holder.itemView.rootView.setOnClickListener {
             listener!!.onClick(chatRooms[position])
@@ -106,7 +103,7 @@ class ChatRoomAdapter : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>
      * find the latest delivered chat message.
      * This way we order the chat messages by latest date.
      */
-    fun showChatRoomMessages(chatRoom: ChatRoom){
+    fun showChatRoomMessages(chatRoom: ChatRoom, holder: ChatRoomViewHolder?){
 
         chatRoom.messages.keys.forEach {
             getChatMessage(it).addValueEventListener(object : ValueEventListener {
@@ -116,7 +113,7 @@ class ChatRoomAdapter : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>
                     if (chatMessage != null) {
                         messages.add(chatMessage)
 
-                        showLatestMessage(messages, holder)
+                        showLatestMessage(messages, this@ChatRoomAdapter.holder)
                     }
                 }
 

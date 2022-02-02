@@ -11,7 +11,6 @@ import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.api.adapter.ChatMessageAdapter
 import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
-import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 
@@ -21,7 +20,7 @@ object ChatMessageUtils {
         context: Context,
         chatRoom: ChatRoom,
         text: EditText,
-        onShowMessages: Unit
+        onShowMessages: () -> Unit
     ): ChatMessageAdapter.OnItemLongClickListener {
         return object : ChatMessageAdapter.OnItemLongClickListener {
             override fun onLongClick(chatMessage: ChatMessage) {
@@ -43,7 +42,7 @@ object ChatMessageUtils {
 
                 remove.setOnClickListener {
                     EventManager.onRemovingChatMessage(chatMessage, chatRoom, context)
-                    onShowMessages
+                    onShowMessages()
                 }
 
                 copy.setOnClickListener {

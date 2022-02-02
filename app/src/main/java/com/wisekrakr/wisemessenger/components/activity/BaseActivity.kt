@@ -6,10 +6,6 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
-import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.viewbinding.ViewBinding
 import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
@@ -18,12 +14,11 @@ import com.wisekrakr.wisemessenger.components.activity.chat.ContactsActivity
 import com.wisekrakr.wisemessenger.components.activity.profile.ProfileSettingsActivity
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.utils.Actions.IntentActions.returnToActivityWithFlags
-import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 
-abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineScope, LifecycleObserver {
+abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineScope{
 
     private lateinit var viewBinding: VB
     abstract val bindingInflater: (LayoutInflater) -> VB
@@ -37,8 +32,6 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineSc
         setContentView(viewBinding.root)
         setup()
         supportBar()
-
-        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
         if(FirebaseUtils.firebaseAuth.currentUser?.uid != null){
             if(isInBackground)
@@ -63,20 +56,11 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineSc
 
     override val coroutineContext = Dispatchers.Main + job
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    fun onMoveToForeground(){
-        isInBackground = false
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    fun onMoveToBackground(){
-        isInBackground = true
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         job.cancel()
 //        viewBinding = null
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -101,9 +85,13 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineSc
                 startActivity(Intent(this, ProfileSettingsActivity::class.java))
             }
             R.id.nav_sign_out -> {
+                UserProfileRepository.updateUserConnectivityStatus(
+                    FirebaseUtils.firebaseAuth.currentUser?.uid.toString(),
+                    "Offline"
+                )
+
                 FirebaseUtils.firebaseAuth.signOut()
 
-//                returnToActivityWithFlags(StartActivity::class.simpleName.toString())
                 startActivity(Intent(this, StartActivity::class.java))
             }
         }

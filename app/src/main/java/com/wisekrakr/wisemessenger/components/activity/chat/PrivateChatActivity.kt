@@ -13,13 +13,10 @@ import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.api.adapter.ChatMessageAdapter
 import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
-import com.wisekrakr.wisemessenger.api.model.Notification
 import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
-import com.wisekrakr.wisemessenger.api.model.nondata.NotificationType
 import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.saveChatMessage
 import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.addMessageToChatRoom
-import com.wisekrakr.wisemessenger.api.repository.NotificationRepository.saveNotification
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
 import com.wisekrakr.wisemessenger.components.ChatMessageUtils
 import com.wisekrakr.wisemessenger.components.EventManager
@@ -59,20 +56,23 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
 
         chatMessageAdapter = ChatMessageAdapter()
 
-        onShowMessages()
+        onShowMessagesCoroutine()
 
         binding.btnSendMessagePrivateChat.setOnClickListener {
             onSendMessage()
         }
 
+        //todo this will make this activity search twice for the same messages
+
         chatMessageAdapter.setLongClickListener(ChatMessageUtils.onChatMessageLongClick(
             this,
             chatRoom,
-            binding.txtEnterMessagePrivateChat,
-            onShowMessages()
-        ))
-    }
+            binding.txtEnterMessagePrivateChat
 
+        ) {
+            onShowMessagesOnce()
+        })
+    }
 
 
     override fun supportBar() {
@@ -107,7 +107,6 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
         launch {
 
             if (!binding.txtEnterMessagePrivateChat.text.isNullOrEmpty()) {
-
                 val chatMessage = ChatMessage(
                     Conversationalist(
                         firebaseAuth.currentUser?.uid.toString(),
@@ -127,20 +126,20 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
 
                             binding.txtEnterMessagePrivateChat.text.clear()
 
-                            chatRoom.participants.forEach { conversationalist ->
-                                if(conversationalist.uid != firebaseAuth.currentUser?.uid){
-                                    saveNotification(
-                                        Notification(
-                                            conversationalist.uid,
-                                            conversationalist.username,
-                                            firebaseAuth.currentUser?.uid.toString(),
-                                            firebaseAuth.currentUser?.displayName.toString(),
-                                            chatMessage.message,
-                                            NotificationType.MESSAGE
-                                        )
-                                    )
-                                }
-                            }
+//                            chatRoom.participants.forEach { conversationalist ->
+//                                if(conversationalist.uid != firebaseAuth.currentUser?.uid){
+//                                    saveNotification(
+//                                        Notification(
+//                                            conversationalist.uid,
+//                                            conversationalist.username,
+//                                            firebaseAuth.currentUser?.uid.toString(),
+//                                            firebaseAuth.currentUser?.displayName.toString(),
+//                                            chatMessage.message,
+//                                            NotificationType.MESSAGE
+//                                        )
+//                                    )
+//                                }
+//                            }
                         }.addOnFailureListener {
                             Log.d(ACTIVITY_TAG,
                                 "Failed saving Chat Messages to ChatRoom: ${it.cause}")
@@ -151,19 +150,18 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
                         Log.d(ACTIVITY_TAG,
                             "Failed saving Chat Message to database: ${it.cause}")
                     }
-            }else{
+            } else {
                 makeToast("You cannot send empty messages.")
             }
         }
     }
 
-    private fun onShowMessages() {
+    private fun onShowMessagesCoroutine() {
         launch {
-
             EventManager.onGetAllChatMessagesOfChatRoom(
                 chatRoom.uid,
                 messagesList
-            ){
+            ) {
                 RecyclerViewDataSetup
                     .messages(
                         chatMessageAdapter,
@@ -174,6 +172,24 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
 
                 binding.recyclerViewPrivateChat.smoothScrollToPosition(chatMessageAdapter.itemCount)
             }
+        }
+    }
+
+    private fun onShowMessagesOnce(){
+        messagesList.clear()
+        EventManager.onGetAllChatMessagesOfChatRoom(
+            chatRoom.uid,
+            messagesList
+        ) {
+            RecyclerViewDataSetup
+                .messages(
+                    chatMessageAdapter,
+                    it,
+                    binding.recyclerViewPrivateChat,
+                    this@PrivateChatActivity
+                )
+
+            binding.recyclerViewPrivateChat.smoothScrollToPosition(chatMessageAdapter.itemCount)
         }
     }
 

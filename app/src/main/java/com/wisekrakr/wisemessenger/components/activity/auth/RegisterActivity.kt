@@ -9,14 +9,14 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.messaging.FirebaseMessaging
+import com.wisekrakr.wisemessenger.api.model.User
+import com.wisekrakr.wisemessenger.api.repository.UserRepository
+import com.wisekrakr.wisemessenger.api.repository.UserRepository.saveUser
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityRegisterBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.updateFirebaseUser
-import com.wisekrakr.wisemessenger.api.model.User
-import com.wisekrakr.wisemessenger.api.repository.UserRepository
-import com.wisekrakr.wisemessenger.api.repository.UserRepository.saveUser
 import com.wisekrakr.wisemessenger.utils.Actions.IntentActions.returnToActivityWithFlags
 import com.wisekrakr.wisemessenger.utils.Extensions
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
@@ -34,8 +34,8 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
     private lateinit var registerInputsArray: Array<EditText>
 
 
-    override val bindingInflater: (LayoutInflater) -> ActivityRegisterBinding
-         = ActivityRegisterBinding::inflate
+    override val bindingInflater: (LayoutInflater) -> ActivityRegisterBinding =
+        ActivityRegisterBinding::inflate
 
     override fun setup() {
 
@@ -74,7 +74,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
                 Extensions.isRequired(registerInputsArray)
 
             } else {
-                Log.d(ACTIVITY_TAG,"Registering....")
+                Log.d(ACTIVITY_TAG, "Registering....")
 
                 registerUsername = binding.usernameEditTextRegister.text.toString().trim()
                 registerEmail = binding.emailEditTextRegister.text.toString().trim()
@@ -84,18 +84,25 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
                     .addOnCompleteListener { task ->
                         if (!task.isSuccessful) return@addOnCompleteListener
 
-                        if(task.isComplete){
+                        if (task.isComplete) {
                             val currentUserUid = firebaseAuth.currentUser!!.uid
                             val deviceToken = FirebaseMessaging.getInstance().token
 
-                            UserRepository.putDeviceTokenOnUser(currentUserUid, deviceToken.toString())
+                            UserRepository.putDeviceTokenOnUser(currentUserUid,
+                                deviceToken.toString())
                                 .addOnCompleteListener {
                                     saveUserToFirebaseDatabase()
 
-                                    Log.d(ACTIVITY_TAG, "Successfully created user: ${task.result?.user?.uid}")
+                                    Log.d(ACTIVITY_TAG,
+                                        "Successfully created user: ${task.result?.user?.uid}")
 
                                     makeToast("Created account successfully!")
-                                    startActivity(Intent(this@RegisterActivity, HomeActivity::class.java))
+
+                                    val intent =
+                                        Intent(this@RegisterActivity, HomeActivity::class.java)
+                                    intent.putExtra("username", registerUsername)
+
+                                    startActivity(intent)
                                     finish()
                                 }.addOnFailureListener {
                                     makeToast("Failed set Device Token for user: ${it.message}")

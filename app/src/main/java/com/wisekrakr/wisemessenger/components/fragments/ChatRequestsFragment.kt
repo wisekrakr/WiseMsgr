@@ -3,7 +3,6 @@ package com.wisekrakr.wisemessenger.components.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
@@ -17,8 +16,6 @@ import com.wisekrakr.wisemessenger.api.model.nondata.RequestType
 import com.wisekrakr.wisemessenger.api.repository.ChatRequestRepository.getChatRequestsForCurrentUser
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import kotlinx.coroutines.launch

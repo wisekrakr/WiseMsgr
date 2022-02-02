@@ -1,14 +1,10 @@
 package com.wisekrakr.wisemessenger.api.repository
 
-import android.annotation.SuppressLint
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DatabaseReference
-import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.rootReference
 import com.wisekrakr.wisemessenger.utils.Constants
-import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 object UserRepository {
 

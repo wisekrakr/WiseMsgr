@@ -54,6 +54,8 @@ object Actions {
             }
         }
 
+
+
         fun Activity.cropImage() {
             CropImage.activity()
                 .setGuidelines(CropImageView.Guidelines.ON)

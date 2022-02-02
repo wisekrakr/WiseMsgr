@@ -28,7 +28,8 @@ import java.util.*
 
 object EventManager {
 
-    fun onGetAllUsers(
+    fun onGetUserByChildValue(
+        name: String,
         list: ArrayList<UserProfile>,
         setupViewBinding: (ArrayList<UserProfile>) -> Unit,
     ) {
@@ -38,8 +39,11 @@ object EventManager {
                     snapshot.children.forEach {
                         val profile = it.getValue(UserProfile::class.java)!!
 
-                        if (profile.uid != firebaseAuth.uid) {
-                            list.add(profile)
+                        if (!profile.uid.isNullOrEmpty()) {
+                            if (profile.uid != firebaseAuth.uid) {
+                                if (profile.username.toLowerCase(Locale.ROOT).contains(name.toLowerCase(Locale.ROOT)))
+                                list.add(profile)
+                            }
                         }
                     }
 
@@ -52,6 +56,7 @@ object EventManager {
             })
     }
 
+
     fun onGetAllContactsOfCurrentUser(
         getContact: (String) -> Unit,
     ) {
@@ -60,28 +65,16 @@ object EventManager {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val userProfile = snapshot.getValue(UserProfile::class.java)
 
-                    if (userProfile!!.chatRooms.isNotEmpty()) {
-
-                        userProfile.chatRooms.keys.forEach {
-                            getChatRoom(it).addListenerForSingleValueEvent(
-                                object : ValueEventListener {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        val chatRoom = snapshot.getValue(ChatRoom::class.java)
-
-                                        chatRoom?.participants?.forEach { conversationalist ->
-                                            if (conversationalist.uid != firebaseAuth.uid) {
-                                                getContact(conversationalist.uid)
-                                            }
-                                        }
-                                    }
-
-                                    override fun onCancelled(error: DatabaseError) {
-                                    }
+                    if (!userProfile?.uid.isNullOrEmpty()) {
+                        if (userProfile!!.contacts.isNotEmpty()) {
+                            userProfile.contacts.values.forEach { conversationalist ->
+                                if (conversationalist.uid != firebaseAuth.uid) {
+                                    getContact(conversationalist.uid)
                                 }
-                            )
+                            }
+                        } else {
+                            getContact("")
                         }
-                    } else {
-                        getContact("")
                     }
                 }
 
@@ -90,15 +83,24 @@ object EventManager {
             })
     }
 
+    fun onAddChatMessageToChatRoom(chatRoom: ChatRoom, chatMessage: ChatMessage) {
+        ChatRoomRepository.addMessageToChatRoom(chatRoom, chatMessage)
+            .addOnSuccessListener {
+                Log.d(TAG, "Successfully saved Chat Messages to ChatRoom")
+
+            }.addOnFailureListener {
+                Log.d(TAG,
+                    "Failed saving Chat Messages to ChatRoom: ${it.cause}")
+            }
+    }
+
     fun onGetAllChatMessagesOfChatRoom(
         chatRoomUid: String,
         list: ArrayList<ChatMessage>,
         setupViewBinding: (ArrayList<ChatMessage>) -> Unit,
     ) {
-
         getChatRoomMessages(chatRoomUid).addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-
                 ChatMessageRepository.getChatMessage(snapshot.key.toString())
                     .addListenerForSingleValueEvent(
                         object : ValueEventListener {
@@ -112,8 +114,8 @@ object EventManager {
                                     } else {
                                         chatMessage.messageType = 1
                                     }
-                                    list.add(chatMessage)
 
+                                    list.add(chatMessage)
                                 }
 
                                 setupViewBinding(list)
@@ -124,8 +126,8 @@ object EventManager {
                             }
                         }
                     )
-            }
 
+            }
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onChildRemoved(snapshot: DataSnapshot) {}
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
@@ -173,12 +175,51 @@ object EventManager {
             chatRoom
         ).addOnSuccessListener {
             Log.d(TAG, "Created new chat room")
+
+            onAddContactToUserProfileContactList(selectedContacts)
+
         }.addOnFailureListener {
             Log.d(TAG, "Failed to create new chat room ${it.cause}")
             return@addOnFailureListener
         }
 
         return chatRoom
+    }
+
+    fun onAddContactToUserProfileContactList(
+        selectedContacts: ArrayList<Conversationalist>,
+    ) {
+        selectedContacts.forEach { conversationalist ->
+            if (conversationalist.uid != firebaseAuth.uid) {
+                /**
+                 * Add contact to own contacts list
+                 */
+                UserProfileRepository.updateUserWithANewContact(
+                    conversationalist,
+                    firebaseAuth.currentUser!!.uid)
+                    .addOnSuccessListener {
+                        Log.d(TAG, "Added contact to User profile contact list")
+                    }.addOnFailureListener {
+                        Log.d(TAG, "Failed to add contact to user contact list ${it.cause}")
+                        return@addOnFailureListener
+                    }
+
+                /**
+                 * Add contact to other contacts list
+                 */
+                UserProfileRepository.updateUserWithANewContact(
+                    Conversationalist(
+                        firebaseAuth.currentUser!!.uid,
+                        firebaseAuth.currentUser!!.displayName.toString()
+                    ), conversationalist.uid)
+                    .addOnSuccessListener {
+                        Log.d(TAG, "Added contact to User profile contact list")
+                    }.addOnFailureListener {
+                        Log.d(TAG, "Failed to add contact to user contact list ${it.cause}")
+                        return@addOnFailureListener
+                    }
+            }
+        }
     }
 
     fun onSaveUserProfileImage(

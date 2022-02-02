@@ -21,6 +21,7 @@ import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.api.repository.GroupRepository
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
+import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.isNotEmpty
 import com.wisekrakr.wisemessenger.utils.Extensions.isRequired
@@ -50,8 +51,8 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
 
         selectedParticipants.add(
             Conversationalist(
-                FirebaseUtils.firebaseAuth.currentUser?.uid.toString(),
-                FirebaseUtils.firebaseAuth.currentUser?.displayName.toString()
+                firebaseAuth.currentUser?.uid.toString(),
+                firebaseAuth.currentUser?.displayName.toString()
             )
         )
 
@@ -72,11 +73,14 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
 
                 makeToast("${c.username} selected")
 
+                contactsAdapter.select()
+
             } else {
                 selectedParticipants.remove(c)
 
                 makeToast("${c.username} deselected")
 
+                contactsAdapter.deselect()
             }
         }
     }

@@ -23,15 +23,45 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/logo_small"
         android:supportsRtl="true"
-        android:theme="@style/Theme.WiseMessenger">
-        <activity android:name=".components.activity.chat.ContactsActivity" />
-        <activity android:name=".components.activity.profile.ProfileActivity" />
-        <activity android:name=".components.activity.actions.SearchActivity" />
+        android:theme="@style/Theme.WiseMessenger"
+        >
+        <activity android:name=".components.activity.chat.ContactsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />
+        </activity>
+        <activity android:name=".components.activity.profile.ProfileActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />
+        </activity>
+        <activity android:name=".components.activity.actions.SearchActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />
+        </activity>
         <activity android:name=".components.activity.auth.LoginMobileActivity" />
-        <activity android:name=".components.activity.actions.CreateGroupActivity" />
-        <activity android:name=".components.activity.chat.GroupChatActivity"/>
-        <activity android:name=".components.activity.profile.ProfileSettingsActivity" />
-        <activity android:name=".components.activity.chat.PrivateChatActivity"/>
+        <activity android:name=".components.activity.actions.CreateGroupActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />
+        </activity>
+        <activity android:name=".components.activity.chat.GroupChatActivity"
+            >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />
+        </activity>
+        <activity android:name=".components.activity.profile.ProfileSettingsActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />
+        </activity>
+        <activity android:name=".components.activity.chat.PrivateChatActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />
+        </activity>
         <activity android:name=".components.activity.auth.LoginActivity" />
         <activity android:name=".components.activity.auth.RegisterActivity" />
         <activity android:name=".components.activity.StartActivity" />

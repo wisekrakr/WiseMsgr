@@ -41,6 +41,10 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
 
         getUserProfile()
 
+        val username = intent.getStringExtra("username");
+
+        binding.txtUsernameSettings.setText(username)
+
         binding.btnSaveSettings.setOnClickListener {
             startUploadProcess()
         }
@@ -187,9 +191,6 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
                     profileMap["bannerUrl"] = it.bannerUrl
                 }
             }
-
-
-
             onUpdateUserProfile(profileMap)
 
         }

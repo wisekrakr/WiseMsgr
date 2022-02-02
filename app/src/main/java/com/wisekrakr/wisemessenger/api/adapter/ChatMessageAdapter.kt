@@ -101,6 +101,8 @@ class ChatMessageAdapter : RecyclerView.Adapter<ChatViewHolder<*>>(){
 
     fun setLongClickListener(clickListener: OnItemLongClickListener) {
         this.listener = clickListener
+
+
     }
 
     interface OnItemLongClickListener {

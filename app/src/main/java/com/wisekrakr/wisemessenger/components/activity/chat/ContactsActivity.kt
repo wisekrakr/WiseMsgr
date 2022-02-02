@@ -22,17 +22,14 @@ class ContactsActivity : BaseActivity<ActivityContactsBinding>() {
         ActivityContactsBinding::inflate
 
     private lateinit var contactsAdapter: ContactsAdapter
-    private var arrayContacts = ArrayList<UserProfile>()
-
+    private var contacts = mutableSetOf<UserProfile>()
 
     override fun setup() {
-
         contactsAdapter = ContactsAdapter()
 
         onShowContacts()
 
         contactsAdapter.setClickListener(onSelectContact)
-
     }
 
     private val onSelectContact = object : ContactsAdapter.OnItemClickListener {
@@ -58,23 +55,24 @@ class ContactsActivity : BaseActivity<ActivityContactsBinding>() {
 
     private fun getContact(uid: String) {
         UserProfileRepository.getUserProfile(uid)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
+            .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
+
                     val userProfile = snapshot.getValue(UserProfile::class.java)
 
                     if (userProfile?.uid != FirebaseUtils.firebaseAuth.uid) {
-                        arrayContacts.add(userProfile!!)
+                        contacts.add(userProfile!!)
                     }
 
                     RecyclerViewDataSetup
                         .contacts(
                             contactsAdapter,
-                            arrayContacts,
+                            contacts.toList(),
                             binding.recyclerViewContacts,
                             this@ContactsActivity
                         )
-                    binding.tvNumberOfContactsContacts.text = arrayContacts.size.toString()
 
+                    binding.tvNumberOfContactsContacts.text = contacts.size.toString()
                 }
 
                 override fun onCancelled(error: DatabaseError) {

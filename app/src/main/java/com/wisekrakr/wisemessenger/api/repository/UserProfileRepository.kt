@@ -7,15 +7,15 @@ import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.rootReference
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.Status
 import com.wisekrakr.wisemessenger.api.model.UserProfile
+import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.utils.Constants
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 object UserProfileRepository {
 
-    fun getUserProfile(uid: String?): DatabaseReference {
-        return rootReference.child(Constants.REF_USER_PROFILES).child(uid!!)
+    fun getUserProfile(childValue: String?): DatabaseReference {
+        return rootReference.child(Constants.REF_USER_PROFILES).child(childValue!!)
     }
 
     fun getUserProfiles(): DatabaseReference {
@@ -54,6 +54,14 @@ object UserProfileRepository {
             .setValue(chatRoom.isPrivate)
     }
 
+    fun updateUserWithANewContact(conversationalist: Conversationalist, userUid:String): Task<Void> {
+        return rootReference
+            .child(Constants.REF_USER_PROFILES)
+            .child(userUid)
+            .child(Constants.REF_USER_CONTACTS)
+            .child(conversationalist.uid)
+            .setValue(conversationalist)
+    }
 
     @SuppressLint("SimpleDateFormat")
     fun updateUserConnectivityStatus(uid: String, state: String) : Task<Void> {
