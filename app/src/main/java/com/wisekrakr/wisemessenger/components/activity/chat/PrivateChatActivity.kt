@@ -33,12 +33,13 @@ import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.launch
 
 
-class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
+class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>(), ChatActivityMethods {
 
     private lateinit var contact: Conversationalist
     private lateinit var userProfile: UserProfile
     private lateinit var chatRoom: ChatRoom
     private lateinit var chatMessageAdapter: ChatMessageAdapter
+    private lateinit var chatActivityMethodsImpl: ChatActivityMethodsImpl
 
     private val messagesList: ArrayList<ChatMessage> = ArrayList()
 
@@ -55,14 +56,17 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
         getCurrentContact()
 
         chatMessageAdapter = ChatMessageAdapter()
+//        chatActivityMethodsImpl = ChatActivityMethodsImpl()
 
         onShowMessagesCoroutine()
 
+        //TODO WORKS ONLY WITH BUTTON, FIGURE IMAGEBUTTON OUT DAMNIT
         binding.btnSendMessagePrivateChat.setOnClickListener {
-            onSendMessage()
-        }
 
-        //todo this will make this activity search twice for the same messages
+            onSendMessage()
+
+            println("TEST TEST TEST TEST")
+        }
 
         chatMessageAdapter.setLongClickListener(ChatMessageUtils.onChatMessageLongClick(
             this,
@@ -120,7 +124,7 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
                 saveChatMessage(
                     chatMessage
                 ).addOnSuccessListener {
-                    addMessageToChatRoom(chatRoom, chatMessage)
+                    addMessageToChatRoom(chatRoom.uid, chatMessage)
                         .addOnSuccessListener {
                             Log.d(ACTIVITY_TAG, "Successfully saved Chat Messages to ChatRoom")
 
@@ -155,8 +159,32 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
             }
         }
     }
+//    private fun onSendMessage() {
+//        launch {
+//
+//            if (!binding.txtEnterMessagePrivateChat.text.isNullOrEmpty()) {
+//
+//                chatActivityMethodsImpl.saveMessage(
+//                    ChatMessage(
+//                        Conversationalist(
+//                            firebaseAuth.currentUser?.uid.toString(),
+//                            firebaseAuth.currentUser?.displayName.toString()),
+//                        chatRoom.participants,
+//                        binding.txtEnterMessagePrivateChat.text.toString(),
+//                        R.color.light_gray,
+//                        chatRoom.uid
+//                    ),
+//                    chatRoom,
+//                    binding.txtEnterMessagePrivateChat.text
+//                )
+//
+//            } else {
+//                makeToast("You cannot send empty messages.")
+//            }
+//        }
+//    }
 
-    private fun onShowMessagesCoroutine() {
+    override fun onShowMessagesCoroutine() {
         launch {
             EventManager.onGetAllChatMessagesOfChatRoom(
                 chatRoom.uid,
@@ -175,7 +203,7 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
         }
     }
 
-    private fun onShowMessagesOnce(){
+    override fun onShowMessagesOnce() {
         messagesList.clear()
         EventManager.onGetAllChatMessagesOfChatRoom(
             chatRoom.uid,
@@ -192,7 +220,6 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
             binding.recyclerViewPrivateChat.smoothScrollToPosition(chatMessageAdapter.itemCount)
         }
     }
-
 
     @SuppressLint("ResourceType")
     @SuppressWarnings
@@ -216,9 +243,6 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>() {
 
         circleImageView.layoutParams = layoutParams
         supportActionBar?.customView = circleImageView
-
-
     }
-
 
 }

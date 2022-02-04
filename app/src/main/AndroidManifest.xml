@@ -25,7 +25,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.WiseMessenger"
         >
-        <activity android:name=".components.activity.chat.ContactsActivity" >
+        <activity android:name=".components.activity.profile.ContactsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />

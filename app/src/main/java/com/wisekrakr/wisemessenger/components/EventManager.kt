@@ -13,7 +13,6 @@ import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.api.model.nondata.NotificationType
 import com.wisekrakr.wisemessenger.api.model.nondata.RequestType
 import com.wisekrakr.wisemessenger.api.repository.*
-import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoom
 import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoomMessages
 import com.wisekrakr.wisemessenger.api.repository.GroupRepository.getGroupsUser
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
@@ -83,11 +82,11 @@ object EventManager {
             })
     }
 
-    fun onAddChatMessageToChatRoom(chatRoom: ChatRoom, chatMessage: ChatMessage) {
-        ChatRoomRepository.addMessageToChatRoom(chatRoom, chatMessage)
+    fun onAddChatMessageToChatRoom(chatRoomUid: String, chatMessage: ChatMessage, extra:()-> Unit) {
+        ChatRoomRepository.addMessageToChatRoom(chatRoomUid, chatMessage)
             .addOnSuccessListener {
                 Log.d(TAG, "Successfully saved Chat Messages to ChatRoom")
-
+                extra()
             }.addOnFailureListener {
                 Log.d(TAG,
                     "Failed saving Chat Messages to ChatRoom: ${it.cause}")
@@ -135,6 +134,22 @@ object EventManager {
         })
 
     }
+
+    fun onAddContactToGroup(conversationalist: Conversationalist, group: Group, chatRoom: ChatRoom){
+        GroupRepository.saveGroup(
+            conversationalist.uid,
+            group
+        ).addOnSuccessListener {
+            Log.e(TAG, "Failure in group creation")
+
+            onCreateNewChatRoomForUserProfile(chatRoom, conversationalist.uid)
+
+        }.addOnFailureListener {
+            Log.e(TAG, "Failure in group creation")
+        }
+    }
+
+
 
     fun onGetAllGroupsOfCurrentUser(
         currentUserUid: String,
@@ -184,6 +199,42 @@ object EventManager {
         }
 
         return chatRoom
+    }
+
+    fun onUpdateChatRoomWithNewContact(chatRoomUid: String,selectedContacts: ArrayList<Conversationalist>) {
+        ChatRoomRepository.addContactsToChatRoom(
+            chatRoomUid, selectedContacts
+        ).addOnSuccessListener {
+            Log.d(TAG, "Created new chat room")
+
+            onAddContactToUserProfileContactList(selectedContacts)
+
+        }.addOnFailureListener {
+            Log.d(TAG, "Failed to create new chat room ${it.cause}")
+            return@addOnFailureListener
+        }
+    }
+
+    /**
+     * Every User Profile has a MutableList of chat room uids
+     * In this function we update the User Profile by adding the newly made chat room
+     * to that mutable list of chat rooms.
+     * They consist of private and non-private (group) chat rooms
+     * @param chatRoom the newly made chat room with 2 participants
+     * @param conversationalistUid user uid
+     */
+    fun onCreateNewChatRoomForUserProfile(chatRoom: ChatRoom, conversationalistUid: String){
+
+        UserProfileRepository.updateUserWithANewChatRoom(
+            chatRoom,
+            conversationalistUid
+        ).addOnCompleteListener {
+            Log.e(TAG, "Successful chat room creation")
+
+        }.addOnFailureListener {
+            Log.e(TAG, "Failure in user profile chat room creation")
+        }
+
     }
 
     fun onAddContactToUserProfileContactList(
@@ -317,7 +368,7 @@ object EventManager {
                     Toast.LENGTH_SHORT).show()
 
 
-                ChatRoomRepository.removeMessageFromChatRoom(chatRoom, chatMessage.uid)
+                ChatRoomRepository.removeMessageFromChatRoom(chatRoom.uid, chatMessage.uid)
             }.addOnFailureListener {
                 Toast.makeText(context, "Message could not be removed", Toast.LENGTH_SHORT)
                     .show()
@@ -389,6 +440,8 @@ object EventManager {
 
 
     }
+
+
 
     object RequestHandler {
 

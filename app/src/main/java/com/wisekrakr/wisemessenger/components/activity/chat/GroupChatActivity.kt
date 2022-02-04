@@ -2,7 +2,8 @@ package com.wisekrakr.wisemessenger.components.activity.chat
 
 import android.annotation.SuppressLint
 import android.app.ActionBar
-import android.util.Log
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.ImageView
@@ -11,30 +12,29 @@ import com.wisekrakr.wisemessenger.api.adapter.ChatMessageAdapter
 import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.Group
-import com.wisekrakr.wisemessenger.api.model.Notification
 import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
-import com.wisekrakr.wisemessenger.api.model.nondata.NotificationType
-import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.saveChatMessage
-import com.wisekrakr.wisemessenger.api.repository.NotificationRepository.saveNotification
 import com.wisekrakr.wisemessenger.components.ChatMessageUtils
 import com.wisekrakr.wisemessenger.components.EventManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
+import com.wisekrakr.wisemessenger.components.activity.actions.CreateGroupActivity
+import com.wisekrakr.wisemessenger.components.activity.profile.ContactsActivity
 import com.wisekrakr.wisemessenger.components.fragments.GroupsFragment
 import com.wisekrakr.wisemessenger.databinding.ActivityGroupChatBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.utils.Actions
-import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
+import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import de.hdodenhof.circleimageview.CircleImageView
 import kotlinx.coroutines.launch
 
 
-class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
+class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>(), ChatActivityMethods {
     override val bindingInflater: (LayoutInflater) -> ActivityGroupChatBinding =
         ActivityGroupChatBinding::inflate
 
     private lateinit var group: Group
     private lateinit var chatMessageAdapter: ChatMessageAdapter
+    private lateinit var chatActivityMethodsImpl: ChatActivityMethodsImpl
     private lateinit var chatRoom: ChatRoom
 
     private val messagesList: ArrayList<ChatMessage> = ArrayList()
@@ -47,18 +47,23 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
 //        showGroupAvatarInActionBar(group)
 
         chatMessageAdapter = ChatMessageAdapter()
+        chatActivityMethodsImpl = ChatActivityMethodsImpl()
 
         onShowMessagesCoroutine()
 
         binding.btnAddFriendGroupChat.setOnClickListener {
-            onAddingFriendToGroup()
+            val intent = Intent(this, CreateGroupActivity::class.java)
+            intent.putExtra("group", group)
+            intent.putExtra("chatRoom", chatRoom)
+            intent.addFlags(FLAG_ACTIVITY_REORDER_TO_FRONT)
+
+            startActivity(intent)
         }
 
         binding.btnSendMessageGroupChat.setOnClickListener {
             onSendMessage()
         }
 
-        //todo this will make this activity search twice for the same messages
         chatMessageAdapter.setLongClickListener(ChatMessageUtils.onChatMessageLongClick(
             this,
             chatRoom,
@@ -75,66 +80,37 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-
     /**
      * Creates a new ChatMessage and saves it in the Firebase Database
      * On Success -> add to ChatRoom messages array for all chat room users
      */
     private fun onSendMessage() {
         launch {
-            val chatMessage = ChatMessage(
-                Conversationalist(
-                    firebaseAuth.currentUser?.uid.toString(),
-                    firebaseAuth.currentUser?.displayName.toString()),
-                chatRoom.participants,
-                binding.txtEnterMessageGroupChat.text.toString(),
-                R.color.light_gray,
-                group.chatRoomUid
-            )
 
-            saveChatMessage(
-                chatMessage
-            ).addOnSuccessListener {
-                Log.d(ACTIVITY_TAG, "Chat Message saved to Firebase Database")
+            if (!binding.txtEnterMessageGroupChat.text.isNullOrEmpty()) {
 
-                addChatMessageToChatRoom(chatMessage)
-                binding.txtEnterMessageGroupChat.text.clear()
+                chatActivityMethodsImpl.saveMessage(
+                    ChatMessage(
+                        Conversationalist(
+                            firebaseAuth.currentUser?.uid.toString(),
+                            firebaseAuth.currentUser?.displayName.toString()),
+                        chatRoom.participants,
+                        binding.txtEnterMessageGroupChat.text.toString(),
+                        R.color.light_gray,
+                        chatRoom.uid
+                    ),
+                    chatRoom.uid,
+                    binding.txtEnterMessageGroupChat.text
+                )
 
-                chatRoom.participants.forEach { conversationalist ->
-                    if (conversationalist.uid != firebaseAuth.currentUser?.uid) {
-                        saveNotification(
-                            Notification(
-                                conversationalist.uid,
-                                conversationalist.username,
-                                firebaseAuth.currentUser?.uid.toString(),
-                                firebaseAuth.currentUser?.displayName.toString(),
-                                "New Message in group: ${chatRoom.uid}",
-                                NotificationType.MESSAGE
-                            )
-                        )
-                    }
-
-                }
-
+            } else {
+                makeToast("You cannot send empty messages.")
             }
-                .addOnFailureListener {
-                    Log.d(ACTIVITY_TAG,
-                        "Failed saving Chat Message to database: ${it.cause}")
-                }
-        }
-    }
-
-    /**
-     * Add a ChatMessage uid in the messages child for this ChatRoom Database Object
-     */
-    private fun addChatMessageToChatRoom(chatMessage: ChatMessage) {
-        launch {
-            EventManager.onAddChatMessageToChatRoom(chatRoom, chatMessage)
         }
     }
 
 
-     private fun onShowMessagesCoroutine() {
+    override fun onShowMessagesCoroutine() {
         launch {
             EventManager.onGetAllChatMessagesOfChatRoom(
                 chatRoom.uid,
@@ -153,7 +129,7 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
         }
     }
 
-    private fun onShowMessagesOnce(){
+    override fun onShowMessagesOnce() {
         messagesList.clear()
         EventManager.onGetAllChatMessagesOfChatRoom(
             chatRoom.uid,
@@ -170,16 +146,6 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>() {
             binding.recyclerViewGroupChat.smoothScrollToPosition(chatMessageAdapter.itemCount)
         }
     }
-
-
-
-    private fun onAddingFriendToGroup() {
-//        getGroup(
-//            firebaseAuth.currentUser!!.uid,
-//
-//        )
-    }
-
 
     @SuppressLint("RtlHardcoded", "WrongConstant")
     @SuppressWarnings

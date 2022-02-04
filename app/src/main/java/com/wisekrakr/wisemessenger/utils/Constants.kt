@@ -8,6 +8,7 @@ class Constants {
         const val REF_GROUPS = "groups"
         const val REF_MESSAGES = "messages"
         const val REF_CHAT_ROOMS = "chat-rooms"
+        const val REF_CHAT_ROOM_PARTICIPANTS = "participants"
         const val REF_CHAT_REQUESTS = "chat-requests"
         const val REF_USER_CHAT_ROOMS = "chatRooms"
         const val REF_USER_CONTACTS = "contacts"

@@ -10,7 +10,7 @@ import androidx.viewbinding.ViewBinding
 import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
 import com.wisekrakr.wisemessenger.components.activity.actions.SearchActivity
-import com.wisekrakr.wisemessenger.components.activity.chat.ContactsActivity
+import com.wisekrakr.wisemessenger.components.activity.profile.ContactsActivity
 import com.wisekrakr.wisemessenger.components.activity.profile.ProfileSettingsActivity
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.utils.Actions.IntentActions.returnToActivityWithFlags
@@ -103,4 +103,6 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineSc
     override fun onBackPressed() {
         returnToActivityWithFlags(HomeActivity::class.simpleName.toString())
     }
+
+
 }
