@@ -13,13 +13,12 @@ import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.Group
 import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
-import com.wisekrakr.wisemessenger.components.ChatMessageUtils
-import com.wisekrakr.wisemessenger.components.EventManager
+import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.actions.CreateGroupActivity
-import com.wisekrakr.wisemessenger.components.activity.profile.ContactsActivity
 import com.wisekrakr.wisemessenger.components.fragments.GroupsFragment
+import com.wisekrakr.wisemessenger.components.utils.ChatMessageUtils
 import com.wisekrakr.wisemessenger.databinding.ActivityGroupChatBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.utils.Actions
@@ -112,7 +111,7 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>(), ChatActivity
 
     override fun onShowMessagesCoroutine() {
         launch {
-            EventManager.onGetAllChatMessagesOfChatRoom(
+            TaskManager.Rooms.onGetAllChatMessagesOfChatRoom(
                 chatRoom.uid,
                 messagesList
             ) {
@@ -131,7 +130,7 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>(), ChatActivity
 
     override fun onShowMessagesOnce() {
         messagesList.clear()
-        EventManager.onGetAllChatMessagesOfChatRoom(
+        TaskManager.Rooms.onGetAllChatMessagesOfChatRoom(
             chatRoom.uid,
             messagesList
         ) {

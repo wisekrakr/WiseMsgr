@@ -2,9 +2,11 @@ package com.wisekrakr.wisemessenger.utils
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.fragment.app.Fragment
 import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import java.text.SimpleDateFormat
@@ -38,6 +40,10 @@ object Extensions {
 
     fun Fragment.makeToast(msg: String){
         Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+    }
+
+    fun Any.makeToast(msg: String, context: Context){
+        Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
     }
 
     @SuppressLint("SimpleDateFormat")

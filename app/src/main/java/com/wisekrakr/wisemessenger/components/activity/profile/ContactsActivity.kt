@@ -8,7 +8,7 @@ import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.api.adapter.ContactsAdapter
 import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
-import com.wisekrakr.wisemessenger.components.EventManager
+import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.actions.SearchActivity
@@ -53,7 +53,7 @@ class ContactsActivity : BaseActivity<ActivityContactsBinding>() {
 
     private fun onShowContacts() {
         launch {
-            EventManager.onGetAllContactsOfCurrentUser {
+            TaskManager.Profiles.onGetAllContactsOfCurrentUser {
                 getContact(it)
             }
         }

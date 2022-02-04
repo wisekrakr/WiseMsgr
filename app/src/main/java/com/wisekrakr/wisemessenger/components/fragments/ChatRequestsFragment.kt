@@ -7,7 +7,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.api.adapter.ChatRequestsAdapter
-import com.wisekrakr.wisemessenger.components.EventManager
+import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
 import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.databinding.FragmentChatRequestsBinding
 import com.wisekrakr.wisemessenger.api.model.ChatRequest
@@ -88,7 +88,7 @@ class ChatRequestsFragment : BaseFragment<FragmentChatRequestsBinding>() {
 
     private fun removeRequests(chatRequest: ChatRequest) {
         launch {
-            EventManager.onSaveChatRequest(
+            TaskManager.Requests.onSaveChatRequest(
                 chatRequest.to,
                 chatRequest.toUsername,
                 chatRequest.from,
@@ -106,7 +106,7 @@ class ChatRequestsFragment : BaseFragment<FragmentChatRequestsBinding>() {
     private val onButtonClick = object : ChatRequestsAdapter.OnButtonClickListener {
         override fun onAcceptClicked(position: Int) {
             launch {
-                EventManager.onSaveChatRequest(
+                TaskManager.Requests.onSaveChatRequest(
                     requests[position].to,
                     requests[position].toUsername,
                     requests[position].from,
@@ -146,7 +146,7 @@ class ChatRequestsFragment : BaseFragment<FragmentChatRequestsBinding>() {
                 )
             )
 
-            val chatRoom = EventManager.onCreateNewChatRoom(
+            val chatRoom = TaskManager.Rooms.onCreateNewChatRoom(
                 users,
                 true
             )

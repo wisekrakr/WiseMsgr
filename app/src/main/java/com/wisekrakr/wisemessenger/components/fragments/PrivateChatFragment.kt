@@ -8,7 +8,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.api.adapter.ChatRoomAdapter
-import com.wisekrakr.wisemessenger.components.EventManager
+import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.chat.PrivateChatActivity
 import com.wisekrakr.wisemessenger.databinding.FragmentPrivateChatBinding
@@ -62,11 +62,12 @@ class PrivateChatFragment : BaseFragment<FragmentPrivateChatBinding>() {
         }
     }
 
+    //TODO show all chatrooms, including rooms from groups
     private fun onFindAllPrivateConversations() {
 
         launch {
             firebaseAuth.uid?.let {
-                EventManager.onGetChatRooms(it) { chatRoomId ->
+                TaskManager.Profiles.onGetUserProfileChatRooms(it) { chatRoomId ->
                     getChatRoom(chatRoomId).addValueEventListener(
                         object : ValueEventListener {
                             override fun onDataChange(snapshot: DataSnapshot) {

@@ -3,9 +3,8 @@ package com.wisekrakr.wisemessenger.components.activity.chat
 import android.text.Editable
 import android.util.Log
 import com.wisekrakr.wisemessenger.api.model.ChatMessage
-import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository
-import com.wisekrakr.wisemessenger.components.EventManager
+import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 
 class ChatActivityMethodsImpl {
@@ -24,7 +23,7 @@ class ChatActivityMethodsImpl {
     }
 
     private fun addToChatRoom(chatRoomUid: String, chatMessage: ChatMessage, text: Editable){
-        EventManager.onAddChatMessageToChatRoom(chatRoomUid, chatMessage) {
+        TaskManager.Rooms.onAddChatMessageToChatRoom(chatRoomUid, chatMessage) {
             text.clear()
         }
     }

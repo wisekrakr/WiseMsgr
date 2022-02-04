@@ -10,14 +10,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.wisekrakr.wisemessenger.components.EventManager
-import com.wisekrakr.wisemessenger.components.activity.BaseActivity
-import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
-import com.wisekrakr.wisemessenger.databinding.ActivityProfileSettingsBinding
 import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.saveUserProfile
 import com.wisekrakr.wisemessenger.api.repository.UserRepository.updateUser
+import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
+import com.wisekrakr.wisemessenger.components.activity.BaseActivity
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
+import com.wisekrakr.wisemessenger.databinding.ActivityProfileSettingsBinding
 import com.wisekrakr.wisemessenger.utils.Actions
 import com.wisekrakr.wisemessenger.utils.Constants.Companion.STORAGE_AVATARS
 import com.wisekrakr.wisemessenger.utils.Constants.Companion.STORAGE_BANNERS
@@ -25,7 +25,6 @@ import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import kotlinx.coroutines.launch
 import java.util.*
-import kotlin.collections.HashMap
 
 class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
 
@@ -71,20 +70,20 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
             launch {
                 getUserProfile(currentUser!!.uid)
                     .addListenerForSingleValueEvent(
-                    object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            profile = snapshot.getValue(UserProfile::class.java)
-                            if (profile != null) {
-                                populateEditableItems(profile!!)
+                        object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                profile = snapshot.getValue(UserProfile::class.java)
+                                if (profile != null) {
+                                    populateEditableItems(profile!!)
+                                }
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Log.e(ACTIVITY_TAG,
+                                    "Could not get current user profile ${error.message}")
                             }
                         }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            Log.e(ACTIVITY_TAG,
-                                "Could not get current user profile ${error.message}")
-                        }
-                    }
-                )
+                    )
             }
         }
     }
@@ -95,7 +94,7 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
             binding.txtUsernameSettings.setText(profile.username)
         if (profile.status.isNotEmpty())
             binding.txtStatusSettings.setText(profile.status)
-        if (profile.avatarUrl.isNotEmpty()){
+        if (profile.avatarUrl.isNotEmpty()) {
             binding.imgBtnAvatarSettings.alpha = 0f
             Actions.ImageActions.loadImage(profile.avatarUrl, binding.circleImageAvatarSettings)
         }
@@ -133,7 +132,7 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
 
         userProfile.updatedAt = Date()
 
-        if(profile?.chatRooms != null){
+        if (profile?.chatRooms != null) {
             userProfile.chatRooms = profile?.chatRooms!!
         }
 
@@ -164,7 +163,7 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
     private fun startUploadProcess() {
         launch {
             if (selectedAvatar != null) {
-                EventManager.onSaveUserProfileImage(
+                TaskManager.Profiles.onSaveUserProfileImage(
                     selectedAvatar,
                     STORAGE_AVATARS,
                     profileMap
@@ -175,7 +174,7 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
             }
 
             if (selectedBanner != null) {
-                EventManager.onSaveUserProfileImage(
+                TaskManager.Profiles.onSaveUserProfileImage(
                     selectedBanner,
                     STORAGE_BANNERS,
                     profileMap
@@ -184,7 +183,7 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
                 }
             }
 
-            if (profile != null){
+            if (profile != null) {
 
                 profile?.let {
                     profileMap["avatarUrl"] = it.avatarUrl

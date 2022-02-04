@@ -9,20 +9,17 @@ import android.view.ViewGroup
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
-import com.wisekrakr.wisemessenger.components.activity.actions.CreateGroupActivity
-import com.wisekrakr.wisemessenger.components.activity.chat.GroupChatActivity
 import com.wisekrakr.wisemessenger.api.adapter.GroupsAdapter
-import com.wisekrakr.wisemessenger.components.EventManager
-import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
-import com.wisekrakr.wisemessenger.databinding.FragmentGroupsBinding
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.Group
 import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoom
 import com.wisekrakr.wisemessenger.api.repository.GroupRepository.getGroupsUser
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
+import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
+import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
+import com.wisekrakr.wisemessenger.components.activity.actions.CreateGroupActivity
+import com.wisekrakr.wisemessenger.components.activity.chat.GroupChatActivity
+import com.wisekrakr.wisemessenger.databinding.FragmentGroupsBinding
 import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
 import kotlinx.coroutines.launch
 
@@ -60,11 +57,11 @@ class GroupsFragment : BaseFragment<FragmentGroupsBinding>() {
     private fun onShowGroups() {
         launch {
 
-            EventManager.onGetAllGroupsOfCurrentUser(
+            TaskManager.Groups.onGetAllGroupsOfCurrentUser(
                 currentUser!!.uid,
                 arrayGroups
             ) {
-                if(isAdded){
+                if (isAdded) {
                     RecyclerViewDataSetup
                         .groups(
                             groupsAdapter,

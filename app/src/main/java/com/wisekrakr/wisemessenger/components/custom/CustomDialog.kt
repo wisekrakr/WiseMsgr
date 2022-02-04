@@ -1,4 +1,4 @@
-package com.wisekrakr.wisemessenger.components
+package com.wisekrakr.wisemessenger.components.custom
 
 import android.app.Dialog
 import android.content.Context

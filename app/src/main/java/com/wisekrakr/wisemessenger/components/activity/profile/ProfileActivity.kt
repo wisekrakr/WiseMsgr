@@ -7,17 +7,16 @@ import android.view.View.VISIBLE
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import com.wisekrakr.wisemessenger.components.EventManager
-import com.wisekrakr.wisemessenger.components.EventManager.onGetAllContactsOfCurrentUser
-import com.wisekrakr.wisemessenger.components.activity.BaseActivity
-import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
-import com.wisekrakr.wisemessenger.components.activity.actions.SearchActivity
-import com.wisekrakr.wisemessenger.databinding.ActivityProfileBinding
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.api.model.nondata.RequestType
 import com.wisekrakr.wisemessenger.api.repository.ChatRequestRepository.getChatRequestsForCurrentUser
 import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoom
+import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
+import com.wisekrakr.wisemessenger.components.activity.BaseActivity
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
+import com.wisekrakr.wisemessenger.components.activity.actions.SearchActivity
+import com.wisekrakr.wisemessenger.databinding.ActivityProfileBinding
 import com.wisekrakr.wisemessenger.utils.Actions.ImageActions.loadImage
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
@@ -58,7 +57,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
      */
     private fun onEndingConversation(chatRoom: ChatRoom) {
         launch {
-            EventManager.onEndingConversation(chatRoom, this@ProfileActivity){
+            TaskManager.onEndingConversation(chatRoom, this@ProfileActivity) {
                 toggleButtons(true)
             }
         }
@@ -73,10 +72,10 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
      */
     private fun onSendRequest(requestType: RequestType) {
         launch {
-            onGetAllContactsOfCurrentUser{
+            TaskManager.Profiles.onGetAllContactsOfCurrentUser {
                 Log.d(ACTIVITY_TAG, "SENDING REQUEST $it")
                 if (currentUserUid != it || it.isBlank()) {
-                    EventManager.onSaveChatRequest(
+                    TaskManager.Requests.onSaveChatRequest(
                         userProfile.uid,
                         userProfile.username,
                         currentUserUid,
@@ -137,7 +136,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
      */
     private fun isAlreadyInContact() {
         launch {
-            EventManager.onGetChatRooms(userProfile.uid) {
+            TaskManager.Profiles.onGetUserProfileChatRooms(userProfile.uid) {
 
                 getChatRoom(it).addListenerForSingleValueEvent(
                     object : ValueEventListener {

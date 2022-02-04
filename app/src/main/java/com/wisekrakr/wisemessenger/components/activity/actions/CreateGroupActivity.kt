@@ -1,6 +1,5 @@
 package com.wisekrakr.wisemessenger.components.activity.actions
 
-import android.opengl.Visibility
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,7 @@ import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.api.repository.GroupRepository
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
-import com.wisekrakr.wisemessenger.components.EventManager
+import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityCreateGroupBinding
@@ -26,7 +25,6 @@ import com.wisekrakr.wisemessenger.utils.Extensions.isRequired
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import kotlinx.coroutines.launch
 import java.util.*
-import java.util.stream.Collectors
 import kotlin.collections.ArrayList
 
 /**
@@ -130,7 +128,7 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
 
             if (isNotEmpty(createGroupInputsArray)) {
                 val group = Group(groupName)
-                val chatRoom = EventManager.onCreateNewChatRoom(
+                val chatRoom = TaskManager.Rooms.onCreateNewChatRoom(
                     selectedParticipants,
                     false
                 )
@@ -143,7 +141,7 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
                     ).addOnSuccessListener {
                         makeToast("Successfully created group: $groupName")
 
-                        EventManager.onCreateNewChatRoomForUserProfile(chatRoom,
+                        TaskManager.Profiles.onCreateNewChatRoomForUserProfile(chatRoom,
                             conversationalist.uid)
 
                     }.addOnFailureListener {
@@ -160,7 +158,7 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
     private fun addContactToGroup() {
         launch {
             selectedParticipants.forEach { conversationalist ->
-                EventManager.onAddContactToGroup(conversationalist, group, chatRoom)
+                TaskManager.Groups.onAddContactToGroup(conversationalist, group, chatRoom)
             }
             selectedParticipants.addAll(chatRoom.participants)
         }
@@ -168,7 +166,7 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
     }
 
     private fun addContactToChatRoom() {
-        EventManager.onUpdateChatRoomWithNewContact(chatRoom.uid, selectedParticipants)
+        TaskManager.Rooms.onUpdateChatRoomWithNewContact(chatRoom.uid, selectedParticipants)
     }
 
 
@@ -178,7 +176,7 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
     private fun showContacts() {
         launch {
             val list = arrayListOf<String>()
-            EventManager.onGetAllContactsOfCurrentUser {
+            TaskManager.Profiles.onGetAllContactsOfCurrentUser {
                 getContact(it)
 
                 if (intent.hasExtra("chatRoom")) {
@@ -186,10 +184,10 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
                 }
             }
 
-            if(list.isNotEmpty()){
-                list.forEach { uid->
+            if (list.isNotEmpty()) {
+                list.forEach { uid ->
                     chatRoom.participants.forEach { conversationalist ->
-                        if(conversationalist.uid != uid) getContact(uid)
+                        if (conversationalist.uid != uid) getContact(uid)
                     }
                 }
             }

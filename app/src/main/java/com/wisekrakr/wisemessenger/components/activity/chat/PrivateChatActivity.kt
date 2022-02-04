@@ -18,12 +18,12 @@ import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.saveChatMessage
 import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.addMessageToChatRoom
 import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
-import com.wisekrakr.wisemessenger.components.ChatMessageUtils
-import com.wisekrakr.wisemessenger.components.EventManager
+import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.fragments.PrivateChatFragment.Companion.CHAT_ROOM_KEY
 import com.wisekrakr.wisemessenger.components.fragments.PrivateChatFragment.Companion.CONTACT_KEY
+import com.wisekrakr.wisemessenger.components.utils.ChatMessageUtils
 import com.wisekrakr.wisemessenger.databinding.ActivityPrivateChatBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.utils.Actions
@@ -186,7 +186,7 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>(), ChatActi
 
     override fun onShowMessagesCoroutine() {
         launch {
-            EventManager.onGetAllChatMessagesOfChatRoom(
+            TaskManager.Rooms.onGetAllChatMessagesOfChatRoom(
                 chatRoom.uid,
                 messagesList
             ) {
@@ -205,7 +205,7 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>(), ChatActi
 
     override fun onShowMessagesOnce() {
         messagesList.clear()
-        EventManager.onGetAllChatMessagesOfChatRoom(
+        TaskManager.Rooms.onGetAllChatMessagesOfChatRoom(
             chatRoom.uid,
             messagesList
         ) {
