@@ -8,16 +8,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
-import com.wisekrakr.wisemessenger.api.model.UserProfile
-import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.getChatMessage
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
 import com.wisekrakr.wisemessenger.utils.Actions
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.getLatestChatMessage
@@ -79,16 +74,10 @@ class ChatRoomAdapter : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>
     private fun showChatRoomParticipants(chatRoom: ChatRoom, holder: ChatRoomViewHolder){
         chatRoom.participants.forEach {
             if(it.uid != firebaseAuth.uid){
-                getUserProfile(it.uid)
-                    .addListenerForSingleValueEvent(object : ValueEventListener{
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            val avatarUrl = snapshot.getValue(UserProfile::class.java)!!.avatarUrl
-                            Actions.ImageActions.loadImage(avatarUrl, holder.avatar)
-                        }
 
-                        override fun onCancelled(error: DatabaseError) {
-                        }
-                    })
+                ApiManager.Profiles.onGetUser(it.uid){ user->
+                    Actions.ImageActions.loadImage(user.avatarUrl, holder.avatar)
+                }
 
                 holder.contact.text = it.username
             }
@@ -106,20 +95,12 @@ class ChatRoomAdapter : RecyclerView.Adapter<ChatRoomAdapter.ChatRoomViewHolder>
     fun showChatRoomMessages(chatRoom: ChatRoom, holder: ChatRoomViewHolder?){
 
         chatRoom.messages.keys.forEach {
-            getChatMessage(it).addValueEventListener(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val chatMessage = snapshot.getValue(ChatMessage::class.java)
-
-                    if (chatMessage != null) {
-                        messages.add(chatMessage)
-
-                        showLatestMessage(messages, this@ChatRoomAdapter.holder)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
+            ApiManager.Messages.onGetChatMessage(
+                it,
+                messages
+            ){
+                showLatestMessage(messages, this@ChatRoomAdapter.holder)
+            }
         }
     }
 

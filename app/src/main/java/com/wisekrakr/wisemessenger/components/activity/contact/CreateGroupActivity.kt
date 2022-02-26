@@ -1,25 +1,18 @@
-package com.wisekrakr.wisemessenger.components.activity.actions
+package com.wisekrakr.wisemessenger.components.activity.contact
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.api.adapter.ContactsAdapter
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.Group
 import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
-import com.wisekrakr.wisemessenger.api.repository.GroupRepository
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
-import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityCreateGroupBinding
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
-import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.isNotEmpty
 import com.wisekrakr.wisemessenger.utils.Extensions.isRequired
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
@@ -52,12 +45,14 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
 
         showContacts()
 
+        //TODO ADDING CONTACT TO EXISTING GROUP
+
         if (intent.hasExtra("group")) {
             group = intent.getSerializableExtra("group") as Group
             chatRoom = intent.getSerializableExtra("chatRoom") as ChatRoom
 
             binding.etGroupNameAddGroup.visibility = View.GONE
-            binding.btnCreateAddGroup.text = "Add to group chat"
+//            binding.btnCreateAddGroup.text = "Add to group chat"
 
             binding.btnCreateAddGroup.setOnClickListener {
                 addContactToGroup()
@@ -128,26 +123,19 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
 
             if (isNotEmpty(createGroupInputsArray)) {
                 val group = Group(groupName)
-                val chatRoom = TaskManager.Rooms.onCreateNewChatRoom(
+                val chatRoom = ApiManager.Rooms.onCreateNewChatRoom(
                     selectedParticipants,
                     false
                 )
                 group.chatRoomUid = chatRoom.uid
 
                 selectedParticipants.forEach { conversationalist ->
-                    GroupRepository.saveGroup(
+                    ApiManager.Groups.onSaveGroup(
                         conversationalist.uid,
-                        group
-                    ).addOnSuccessListener {
-                        makeToast("Successfully created group: $groupName")
-
-                        TaskManager.Profiles.onCreateNewChatRoomForUserProfile(chatRoom,
-                            conversationalist.uid)
-
-                    }.addOnFailureListener {
-                        makeToast("Failed to create group: $groupName")
-                        Log.e(ACTIVITY_TAG, "Failure in group creation")
-                    }
+                        group,
+                        chatRoom,
+                        this@CreateGroupActivity
+                    )
                 }
             } else {
                 isRequired(createGroupInputsArray)
@@ -158,7 +146,7 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
     private fun addContactToGroup() {
         launch {
             selectedParticipants.forEach { conversationalist ->
-                TaskManager.Groups.onAddContactToGroup(conversationalist, group, chatRoom)
+                ApiManager.Groups.onAddContactToGroup(conversationalist, group, chatRoom)
             }
             selectedParticipants.addAll(chatRoom.participants)
         }
@@ -166,7 +154,7 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
     }
 
     private fun addContactToChatRoom() {
-        TaskManager.Rooms.onUpdateChatRoomWithNewContact(chatRoom.uid, selectedParticipants)
+        ApiManager.Rooms.onUpdateChatRoomWithNewContact(chatRoom.uid, selectedParticipants)
     }
 
 
@@ -176,7 +164,7 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
     private fun showContacts() {
         launch {
             val list = arrayListOf<String>()
-            TaskManager.Profiles.onGetAllContactsOfCurrentUser {
+            ApiManager.Profiles.onGetAllContactsOfCurrentUser {
                 getContact(it)
 
                 if (intent.hasExtra("chatRoom")) {
@@ -195,25 +183,19 @@ class CreateGroupActivity : BaseActivity<ActivityCreateGroupBinding>() {
     }
 
     private fun getContact(uid: String) {
-        getUserProfile(uid)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val userProfile = snapshot.getValue(UserProfile::class.java)
 
-                    if (userProfile?.uid != firebaseAuth.uid) {
-                        contacts.add(userProfile!!)
-                    }
+        ApiManager.Profiles.onGetUser(uid){ userProfile ->
+            if (userProfile.uid != firebaseAuth.uid) {
+                contacts.add(userProfile)
+            }
 
-                    RecyclerViewDataSetup.contacts(
-                        contactsAdapter,
-                        contacts,
-                        binding.recyclerviewAddGroup,
-                        this@CreateGroupActivity
-                    )
-                }
+            RecyclerViewDataSetup.contacts(
+                contactsAdapter,
+                contacts,
+                binding.recyclerviewAddGroup,
+                this@CreateGroupActivity
+            )
+        }
 
-                override fun onCancelled(error: DatabaseError) {
-                }
-            })
     }
 }

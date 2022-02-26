@@ -3,19 +3,14 @@ package com.wisekrakr.wisemessenger.components.fragments
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.api.adapter.ChatRequestsAdapter
-import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
-import com.wisekrakr.wisemessenger.components.activity.HomeActivity
-import com.wisekrakr.wisemessenger.databinding.FragmentChatRequestsBinding
 import com.wisekrakr.wisemessenger.api.model.ChatRequest
 import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
 import com.wisekrakr.wisemessenger.api.model.nondata.RequestType
-import com.wisekrakr.wisemessenger.api.repository.ChatRequestRepository.getChatRequestsForCurrentUser
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
+import com.wisekrakr.wisemessenger.components.activity.HomeActivity
+import com.wisekrakr.wisemessenger.databinding.FragmentChatRequestsBinding
 import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import kotlinx.coroutines.launch
@@ -43,62 +38,38 @@ class ChatRequestsFragment : BaseFragment<FragmentChatRequestsBinding>() {
     private fun showRequests() {
 
         launch {
-            getChatRequestsForCurrentUser(
-                HomeActivity.currentUser!!.uid
-            ).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
+            ApiManager.Requests.onGetAllChatRequestForUser(
+                HomeActivity.currentUser!!.uid,
+                requests,
+                this@ChatRequestsFragment
+            ) {
+                RecyclerViewDataSetup.requests(
+                    chatRequestsAdapter,
+                    it,
+                    viewBinding.recyclerViewRequests,
+                    requireContext()
+                )
 
-                    snapshot.children.forEach {
-                        val request = it.getValue(ChatRequest::class.java)
-
-                        if (request != null) {
-                            Log.d(FRAGMENT_TAG, request.toString())
-
-                            if (request.requestType == RequestType.RECEIVED)
-                                requests.add(request)
-                            if (request.requestType == RequestType.SENT)
-                                requests.add(request)
-                        }
-                    }
-
-                    if(isAdded){
-                        RecyclerViewDataSetup.requests(
-                            chatRequestsAdapter,
-                            requests,
-                            viewBinding.recyclerViewRequests,
-                            requireContext()
-                        )
-
-                        viewBinding.tvNumberOfRequestsRequests.text = requests.size.toString()
-                    }
-
-
-
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e(FRAGMENT_TAG, error.message)
-
-                }
-            })
-
-
+                viewBinding.tvNumberOfRequestsRequests.text = requests.size.toString()
+            }
         }
     }
 
     private fun removeRequests(chatRequest: ChatRequest) {
         launch {
-            TaskManager.Requests.onSaveChatRequest(
+            ApiManager.Requests.onSaveChatRequest(
                 chatRequest.to,
                 chatRequest.toUsername,
                 chatRequest.from,
                 chatRequest.fromUserName,
-                RequestType.CANCELLED
-            ) {
-                requests.remove(chatRequest)
-                chatRequestsAdapter.setData(requests)
-                viewBinding.tvNumberOfRequestsRequests.text = requests.size.toString()
-            }
+                RequestType.CANCELLED, {
+                    requests.remove(chatRequest)
+                    chatRequestsAdapter.setData(requests)
+                    viewBinding.tvNumberOfRequestsRequests.text = requests.size.toString()
+                }, {
+                    Log.d(FRAGMENT_TAG, "Could not remove chat request from database")
+                }
+            )
         }
     }
 
@@ -106,20 +77,21 @@ class ChatRequestsFragment : BaseFragment<FragmentChatRequestsBinding>() {
     private val onButtonClick = object : ChatRequestsAdapter.OnButtonClickListener {
         override fun onAcceptClicked(position: Int) {
             launch {
-                TaskManager.Requests.onSaveChatRequest(
+                ApiManager.Requests.onSaveChatRequest(
                     requests[position].to,
                     requests[position].toUsername,
                     requests[position].from,
                     requests[position].fromUserName,
-                    RequestType.ACCEPT
-                ) {
-                    makeToast("Successfully accepted request: added user to Contacts")
+                    RequestType.ACCEPT, {
+                        makeToast("Successfully accepted request: added user to Contacts")
 
-                    addUserToANewChatRoom(requests[position])
+                        addUserToANewChatRoom(requests[position])
 
-
-                    removeRequests(requests[position])
-                }
+                        removeRequests(requests[position])
+                    }, {
+                        makeToast("Failed to save Chat Request")
+                    }
+                )
             }
         }
 
@@ -146,13 +118,13 @@ class ChatRequestsFragment : BaseFragment<FragmentChatRequestsBinding>() {
                 )
             )
 
-            val chatRoom = TaskManager.Rooms.onCreateNewChatRoom(
+            val chatRoom = ApiManager.Rooms.onCreateNewChatRoom(
                 users,
                 true
             )
 
             users.forEach {
-                UserProfileRepository.updateUserWithANewChatRoom(
+                ApiManager.Profiles.onUpdateUserWithNewChatRoom(
                     chatRoom,
                     it.uid
                 )

@@ -5,13 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.widget.EditText
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.messaging.FirebaseMessaging
 import com.wisekrakr.wisemessenger.api.model.User
-import com.wisekrakr.wisemessenger.api.repository.UserRepository
-import com.wisekrakr.wisemessenger.api.repository.UserRepository.saveUser
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityRegisterBinding
@@ -88,9 +84,10 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
                             val currentUserUid = firebaseAuth.currentUser!!.uid
                             val deviceToken = FirebaseMessaging.getInstance().token
 
-                            UserRepository.putDeviceTokenOnUser(currentUserUid,
-                                deviceToken.toString())
-                                .addOnCompleteListener {
+                            ApiManager.CurrentUser.onPutDeviceTokenOnUser(
+                                currentUserUid,
+                                deviceToken.toString(),
+                                {
                                     saveUserToFirebaseDatabase()
 
                                     Log.d(ACTIVITY_TAG,
@@ -104,9 +101,10 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
 
                                     startActivity(intent)
                                     finish()
-                                }.addOnFailureListener {
-                                    makeToast("Failed set Device Token for user: ${it.message}")
+                                }, {
+                                    makeToast("Failed set Device Token for user")
                                 }
+                            )
                         }
                     }
                     .addOnFailureListener {
@@ -119,10 +117,9 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
     private fun saveUserToFirebaseDatabase() {
         Log.d(ACTIVITY_TAG, "saving user to firebase ${firebaseAuth.uid}")
 
-        saveUser(firebaseAuth.uid).addListenerForSingleValueEvent(object :
-            ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                snapshot.ref.setValue(
+        launch {
+            ApiManager.CurrentUser.onSaveUser {
+                it.ref.setValue(
                     User(
                         firebaseAuth.uid ?: "",
                         registerUsername,
@@ -140,11 +137,7 @@ class RegisterActivity : BaseActivity<ActivityRegisterBinding>() {
                         Log.d(ACTIVITY_TAG, "Failed saving user to database: ${it.cause}")
                     }
             }
-
-            override fun onCancelled(error: DatabaseError) {
-                Log.e(ACTIVITY_TAG, error.message)
-            }
-        })
+        }
     }
 
     // Disable the menu on this activity

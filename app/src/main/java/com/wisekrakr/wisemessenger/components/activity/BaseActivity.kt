@@ -8,8 +8,8 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewbinding.ViewBinding
 import com.wisekrakr.wisemessenger.R
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
-import com.wisekrakr.wisemessenger.components.activity.actions.SearchActivity
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
+import com.wisekrakr.wisemessenger.components.activity.contact.SearchActivity
 import com.wisekrakr.wisemessenger.components.activity.profile.ContactsActivity
 import com.wisekrakr.wisemessenger.components.activity.profile.ProfileSettingsActivity
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
@@ -18,7 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 
-abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineScope{
+abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineScope {
 
     private lateinit var viewBinding: VB
     abstract val bindingInflater: (LayoutInflater) -> VB
@@ -33,17 +33,12 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineSc
         setup()
         supportBar()
 
-        if(FirebaseUtils.firebaseAuth.currentUser?.uid != null){
-            if(isInBackground)
-                UserProfileRepository.updateUserConnectivityStatus(
-                    FirebaseUtils.firebaseAuth.currentUser?.uid.toString(),
-                    "Offline"
-                )
+        if (FirebaseUtils.firebaseAuth.currentUser?.uid != null) {
+            if (isInBackground)
+                ApiManager.Profiles.onUpdateUserConnectivityStatus("Offline")
             else
-                UserProfileRepository.updateUserConnectivityStatus(
-                    FirebaseUtils.firebaseAuth.currentUser?.uid.toString(),
-                    "Online"
-                )
+                ApiManager.Profiles.onUpdateUserConnectivityStatus("Online")
+
         }
     }
 
@@ -85,10 +80,7 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity(), CoroutineSc
                 startActivity(Intent(this, ProfileSettingsActivity::class.java))
             }
             R.id.nav_sign_out -> {
-                UserProfileRepository.updateUserConnectivityStatus(
-                    FirebaseUtils.firebaseAuth.currentUser?.uid.toString(),
-                    "Offline"
-                )
+                ApiManager.Profiles.onUpdateUserConnectivityStatus("Offline")
 
                 FirebaseUtils.firebaseAuth.signOut()
 

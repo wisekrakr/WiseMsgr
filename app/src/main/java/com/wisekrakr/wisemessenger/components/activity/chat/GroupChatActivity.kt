@@ -13,10 +13,10 @@ import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.Group
 import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
-import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
-import com.wisekrakr.wisemessenger.components.activity.actions.CreateGroupActivity
+import com.wisekrakr.wisemessenger.components.activity.contact.CreateGroupActivity
 import com.wisekrakr.wisemessenger.components.fragments.GroupsFragment
 import com.wisekrakr.wisemessenger.components.utils.ChatMessageUtils
 import com.wisekrakr.wisemessenger.databinding.ActivityGroupChatBinding
@@ -33,7 +33,6 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>(), ChatActivity
 
     private lateinit var group: Group
     private lateinit var chatMessageAdapter: ChatMessageAdapter
-    private lateinit var chatActivityMethodsImpl: ChatActivityMethodsImpl
     private lateinit var chatRoom: ChatRoom
 
     private val messagesList: ArrayList<ChatMessage> = ArrayList()
@@ -46,7 +45,6 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>(), ChatActivity
 //        showGroupAvatarInActionBar(group)
 
         chatMessageAdapter = ChatMessageAdapter()
-        chatActivityMethodsImpl = ChatActivityMethodsImpl()
 
         onShowMessagesCoroutine()
 
@@ -88,7 +86,7 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>(), ChatActivity
 
             if (!binding.txtEnterMessageGroupChat.text.isNullOrEmpty()) {
 
-                chatActivityMethodsImpl.saveMessage(
+                ApiManager.Messages.onSaveChatMessage(
                     ChatMessage(
                         Conversationalist(
                             firebaseAuth.currentUser?.uid.toString(),
@@ -98,10 +96,10 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>(), ChatActivity
                         R.color.light_gray,
                         chatRoom.uid
                     ),
-                    chatRoom.uid,
-                    binding.txtEnterMessageGroupChat.text
-                )
-
+                    chatRoom.uid
+                ){
+                    binding.txtEnterMessageGroupChat.setText("")
+                }
             } else {
                 makeToast("You cannot send empty messages.")
             }
@@ -111,7 +109,7 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>(), ChatActivity
 
     override fun onShowMessagesCoroutine() {
         launch {
-            TaskManager.Rooms.onGetAllChatMessagesOfChatRoom(
+            ApiManager.Rooms.onGetAllChatMessagesOfChatRoom(
                 chatRoom.uid,
                 messagesList
             ) {
@@ -130,7 +128,7 @@ class GroupChatActivity : BaseActivity<ActivityGroupChatBinding>(), ChatActivity
 
     override fun onShowMessagesOnce() {
         messagesList.clear()
-        TaskManager.Rooms.onGetAllChatMessagesOfChatRoom(
+        ApiManager.Rooms.onGetAllChatMessagesOfChatRoom(
             chatRoom.uid,
             messagesList
         ) {

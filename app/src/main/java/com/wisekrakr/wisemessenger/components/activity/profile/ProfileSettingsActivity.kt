@@ -4,24 +4,16 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.activity.result.contract.ActivityResultContracts
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.api.model.UserProfile
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.saveUserProfile
-import com.wisekrakr.wisemessenger.api.repository.UserRepository.updateUser
-import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
 import com.wisekrakr.wisemessenger.databinding.ActivityProfileSettingsBinding
 import com.wisekrakr.wisemessenger.utils.Actions
 import com.wisekrakr.wisemessenger.utils.Constants.Companion.STORAGE_AVATARS
 import com.wisekrakr.wisemessenger.utils.Constants.Companion.STORAGE_BANNERS
-import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import kotlinx.coroutines.launch
 import java.util.*
@@ -40,7 +32,7 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
 
         getUserProfile()
 
-        val username = intent.getStringExtra("username");
+        val username = intent.getStringExtra("username")
 
         binding.txtUsernameSettings.setText(username)
 
@@ -68,22 +60,11 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
             makeToast("Please fill out your profile.")
         } else {
             launch {
-                getUserProfile(currentUser!!.uid)
-                    .addListenerForSingleValueEvent(
-                        object : ValueEventListener {
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                profile = snapshot.getValue(UserProfile::class.java)
-                                if (profile != null) {
-                                    populateEditableItems(profile!!)
-                                }
-                            }
+                ApiManager.Profiles.onGetUser(currentUser!!.uid) { userProfile ->
+                    profile = userProfile
 
-                            override fun onCancelled(error: DatabaseError) {
-                                Log.e(ACTIVITY_TAG,
-                                    "Could not get current user profile ${error.message}")
-                            }
-                        }
-                    )
+                    populateEditableItems(userProfile)
+                }
             }
         }
     }
@@ -117,10 +98,15 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
      * Set the new user value to the Database /users reference
      */
     private fun onUpdateUserProfile(profileMap: HashMap<String, String>) {
-        println(currentUser!!.uid)
+
         profileMap["uid"] = currentUser!!.uid
         profileMap["username"] = binding.txtUsernameSettings.text.toString()
         profileMap["status"] = binding.txtStatusSettings.text.toString()
+
+//        if(profile != null){
+//            profileMap["avatarUrl"] = profile!!.avatarUrl
+//            profileMap["bannerUrl"] = profile!!.bannerUrl
+//        }
 
         val userProfile = UserProfile(
             profileMap["uid"].toString(),
@@ -136,23 +122,31 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
             userProfile.chatRooms = profile?.chatRooms!!
         }
 
-        saveUserProfile(
-            userProfile
-        )
-            .addOnSuccessListener {
-                makeToast("Saved profile successfully!")
+        if (profile?.contacts != null) {
+            userProfile.contacts = profile?.contacts!!
+        }
 
-                updateUser(currentUser!!.uid, profileMap["username"].toString())
-                    .addOnSuccessListener {
-                        makeToast("Updated user successfully!")
-                    }
-                    .addOnFailureListener {
-                        makeToast("Failed updating user ${it.cause}")
-                    }
-            }
-            .addOnFailureListener {
-                makeToast("Failed saving profile ${it.cause}")
-            }
+        launch {
+            ApiManager.Profiles.onSaveUserProfile(
+                userProfile,
+                {
+                    makeToast("Saved profile successfully!")
+
+                    ApiManager.CurrentUser.onUpdateUser(
+                        profileMap,
+                        {
+                            makeToast("Updated user successfully!")
+                        },
+                        {
+                            makeToast("Failed updating user")
+                        }
+                    )
+                }, {
+                    makeToast("Failed saving profile ")
+                }
+            )
+        }
+
     }
 
 
@@ -162,19 +156,20 @@ class ProfileSettingsActivity : BaseActivity<ActivityProfileSettingsBinding>() {
      */
     private fun startUploadProcess() {
         launch {
+
+
             if (selectedAvatar != null) {
-                TaskManager.Profiles.onSaveUserProfileImage(
+                ApiManager.Profiles.onSaveUserProfileImage(
                     selectedAvatar,
                     STORAGE_AVATARS,
                     profileMap
                 ) {
-
                     onUpdateUserProfile(it)
                 }
             }
 
             if (selectedBanner != null) {
-                TaskManager.Profiles.onSaveUserProfileImage(
+                ApiManager.Profiles.onSaveUserProfileImage(
                     selectedBanner,
                     STORAGE_BANNERS,
                     profileMap

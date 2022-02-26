@@ -6,19 +6,13 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.widget.ImageView
 import androidx.appcompat.app.ActionBar
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.api.adapter.ChatMessageAdapter
 import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.api.model.nondata.Conversationalist
-import com.wisekrakr.wisemessenger.api.repository.ChatMessageRepository.saveChatMessage
-import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.addMessageToChatRoom
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository.getUserProfile
-import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
 import com.wisekrakr.wisemessenger.components.RecyclerViewDataSetup
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.fragments.PrivateChatFragment.Companion.CHAT_ROOM_KEY
@@ -39,7 +33,6 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>(), ChatActi
     private lateinit var userProfile: UserProfile
     private lateinit var chatRoom: ChatRoom
     private lateinit var chatMessageAdapter: ChatMessageAdapter
-    private lateinit var chatActivityMethodsImpl: ChatActivityMethodsImpl
 
     private val messagesList: ArrayList<ChatMessage> = ArrayList()
 
@@ -56,16 +49,11 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>(), ChatActi
         getCurrentContact()
 
         chatMessageAdapter = ChatMessageAdapter()
-//        chatActivityMethodsImpl = ChatActivityMethodsImpl()
 
         onShowMessagesCoroutine()
 
-        //TODO WORKS ONLY WITH BUTTON, FIGURE IMAGEBUTTON OUT DAMNIT
         binding.btnSendMessagePrivateChat.setOnClickListener {
-
             onSendMessage()
-
-            println("TEST TEST TEST TEST")
         }
 
         chatMessageAdapter.setLongClickListener(ChatMessageUtils.onChatMessageLongClick(
@@ -88,18 +76,9 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>(), ChatActi
 
     private fun getCurrentContact() {
         launch {
-            getUserProfile(contact.uid)
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        userProfile = snapshot.getValue(UserProfile::class.java)!!
-
-                        showContactAvatarInActionBar(userProfile)
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        Log.e(ACTIVITY_TAG, "Failure in get user profile ${error.message}")
-                    }
-                })
+            ApiManager.Profiles.onGetUser(contact.uid) { userProfile ->
+                showContactAvatarInActionBar(userProfile)
+            }
         }
     }
 
@@ -109,56 +88,28 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>(), ChatActi
      */
     private fun onSendMessage() {
         launch {
-
             if (!binding.txtEnterMessagePrivateChat.text.isNullOrEmpty()) {
-                val chatMessage = ChatMessage(
-                    Conversationalist(
-                        firebaseAuth.currentUser?.uid.toString(),
-                        firebaseAuth.currentUser?.displayName.toString()),
-                    chatRoom.participants,
-                    binding.txtEnterMessagePrivateChat.text.toString(),
-                    R.color.light_gray,
+                ApiManager.Messages.onSaveChatMessage(
+                    ChatMessage(
+                        Conversationalist(
+                            firebaseAuth.currentUser?.uid.toString(),
+                            firebaseAuth.currentUser?.displayName.toString()),
+                        chatRoom.participants,
+                        binding.txtEnterMessagePrivateChat.text.toString(),
+                        R.color.light_gray,
+                        chatRoom.uid
+                    ),
                     chatRoom.uid
-                )
-
-                saveChatMessage(
-                    chatMessage
-                ).addOnSuccessListener {
-                    addMessageToChatRoom(chatRoom.uid, chatMessage)
-                        .addOnSuccessListener {
-                            Log.d(ACTIVITY_TAG, "Successfully saved Chat Messages to ChatRoom")
-
-                            binding.txtEnterMessagePrivateChat.text.clear()
-
-//                            chatRoom.participants.forEach { conversationalist ->
-//                                if(conversationalist.uid != firebaseAuth.currentUser?.uid){
-//                                    saveNotification(
-//                                        Notification(
-//                                            conversationalist.uid,
-//                                            conversationalist.username,
-//                                            firebaseAuth.currentUser?.uid.toString(),
-//                                            firebaseAuth.currentUser?.displayName.toString(),
-//                                            chatMessage.message,
-//                                            NotificationType.MESSAGE
-//                                        )
-//                                    )
-//                                }
-//                            }
-                        }.addOnFailureListener {
-                            Log.d(ACTIVITY_TAG,
-                                "Failed saving Chat Messages to ChatRoom: ${it.cause}")
-                        }
-
+                ) {
+                    binding.txtEnterMessagePrivateChat.text.clear()
                 }
-                    .addOnFailureListener {
-                        Log.d(ACTIVITY_TAG,
-                            "Failed saving Chat Message to database: ${it.cause}")
-                    }
+
             } else {
                 makeToast("You cannot send empty messages.")
             }
         }
     }
+
 //    private fun onSendMessage() {
 //        launch {
 //
@@ -186,7 +137,7 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>(), ChatActi
 
     override fun onShowMessagesCoroutine() {
         launch {
-            TaskManager.Rooms.onGetAllChatMessagesOfChatRoom(
+            ApiManager.Rooms.onGetAllChatMessagesOfChatRoom(
                 chatRoom.uid,
                 messagesList
             ) {
@@ -205,7 +156,7 @@ class PrivateChatActivity : BaseActivity<ActivityPrivateChatBinding>(), ChatActi
 
     override fun onShowMessagesOnce() {
         messagesList.clear()
-        TaskManager.Rooms.onGetAllChatMessagesOfChatRoom(
+        ApiManager.Rooms.onGetAllChatMessagesOfChatRoom(
             chatRoom.uid,
             messagesList
         ) {

@@ -8,8 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.viewbinding.ViewBinding
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
 import com.wisekrakr.wisemessenger.utils.Extensions.FRAGMENT_TAG
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,10 +31,8 @@ abstract class BaseFragment<VB : ViewBinding> : Fragment(), CoroutineScope {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mutableViewBinding = bindingInflater.invoke(inflater, container, false)
 
-        UserProfileRepository.updateUserConnectivityStatus(
-            FirebaseUtils.firebaseAuth.currentUser?.uid.toString(),
-            "Online"
-        )
+        ApiManager.Profiles.onUpdateUserConnectivityStatus("Online")
+
 
         return viewBinding.root
     }

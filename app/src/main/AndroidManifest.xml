@@ -35,13 +35,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />
         </activity>
-        <activity android:name=".components.activity.actions.SearchActivity" >
+        <activity android:name=".components.activity.contact.SearchActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />
         </activity>
         <activity android:name=".components.activity.auth.LoginMobileActivity" />
-        <activity android:name=".components.activity.actions.CreateGroupActivity" >
+        <activity android:name=".components.activity.contact.CreateGroupActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.wisekrakr.wisemessenger.components.activity.HomeActivity" />

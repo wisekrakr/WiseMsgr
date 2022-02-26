@@ -8,10 +8,17 @@ import java.util.ArrayList
 import java.util.HashMap
 
 interface UserProfileApi {
-    fun onGetUserByChildValue(
+
+    fun onGetUser(uid: String, continuation:(UserProfile)->Unit)
+
+    fun onGetUsersByChildValue(
         name: String,
         list: ArrayList<UserProfile>,
         setupViewBinding: (ArrayList<UserProfile>) -> Unit,
+    )
+
+    fun onSaveUserProfile(
+        userProfile: UserProfile, completeListener: () -> Unit, failureListener: () -> Unit,
     )
 
     fun onGetAllContactsOfCurrentUser(getContact: (String) -> Unit)
@@ -24,11 +31,19 @@ interface UserProfileApi {
      * @param chatRoom the newly made chat room with 2 participants
      * @param conversationalistUid user uid
      */
-    fun onCreateNewChatRoomForUserProfile(chatRoom: ChatRoom, conversationalistUid: String)
+    fun onCreateNewChatRoomForUser(chatRoom: ChatRoom, conversationalistUid: String)
 
-    fun onAddContactToUserProfileContactList(selectedContacts: ArrayList<Conversationalist>)
+    fun onAddContactToUserContactList(selectedContacts: ArrayList<Conversationalist>)
 
     fun onUpdateUserWithANewContact(conversationalist: Conversationalist, userUid: String)
+
+    fun onUpdateUserWithNewChatRoom(chatRoom: ChatRoom, userUid: String)
+
+    /**
+     * Set User profile to 'Online' or 'Offline'
+     * @param status String 'Online' or 'Offline'
+     */
+    fun onUpdateUserConnectivityStatus(status: String)
 
     fun onSaveUserProfileImage(
         selectedAvatar: Uri?,
@@ -37,7 +52,10 @@ interface UserProfileApi {
         updateUserProfile: (HashMap<String, String>) -> Unit,
     )
 
-    fun onGetUserProfileChatRooms(userProfileUid: String, findChatRoom: (String) -> Unit)
+    fun onGetUserChatRooms(userProfileUid: String, findChatRoom: (String) -> Unit)
 
-    fun onDeleteChatRoomFromUserProfile(userUid:String, chatRoomUid:String)
+    fun onDeleteChatRoomFromUser(userUid: String, chatRoomUid: String)
+
+    fun onGetAllUserProfiles(list: ArrayList<UserProfile>,
+                             setupViewBinding: (ArrayList<UserProfile>) -> Unit,)
 }

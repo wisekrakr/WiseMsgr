@@ -8,6 +8,7 @@ import com.wisekrakr.wisemessenger.utils.Constants
 
 object GroupRepository {
 
+
     fun saveGroup(uid: String, group: Group): Task<Void> {
         val ref = rootReference.child(Constants.REF_GROUPS + "/$uid").push()
         group.uid = ref.key.toString()

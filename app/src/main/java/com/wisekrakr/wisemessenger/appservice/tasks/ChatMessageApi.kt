@@ -3,16 +3,18 @@ package com.wisekrakr.wisemessenger.appservice.tasks
 import android.content.Context
 import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
-import java.util.ArrayList
+import java.util.*
 
 interface ChatMessageApi {
+    fun onSaveChatMessage(chatMessage: ChatMessage, chatRoomUid: String, continuation: () -> Unit)
+
     fun onGetAllChatMessagesOfChatRoom(
         chatRoomUid: String,
         list: ArrayList<ChatMessage>,
         setupViewBinding: (ArrayList<ChatMessage>) -> Unit,
     )
 
-    fun onGetChatMessage(uid:String)
+    fun onGetChatMessage(uid: String, messages: ArrayList<ChatMessage>, continuation: () -> Unit)
 
     fun onRemovingChatMessage(
         chatMessage: ChatMessage,
@@ -21,6 +23,6 @@ interface ChatMessageApi {
     )
 
     fun onRemovingChatMessage(
-        chatMessageUid:String
+        chatMessageUid: String,
     )
 }

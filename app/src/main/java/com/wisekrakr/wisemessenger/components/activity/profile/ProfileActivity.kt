@@ -4,18 +4,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View.INVISIBLE
 import android.view.View.VISIBLE
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
 import com.wisekrakr.wisemessenger.api.model.UserProfile
 import com.wisekrakr.wisemessenger.api.model.nondata.RequestType
-import com.wisekrakr.wisemessenger.api.repository.ChatRequestRepository.getChatRequestsForCurrentUser
-import com.wisekrakr.wisemessenger.api.repository.ChatRoomRepository.getChatRoom
-import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.HomeActivity.Companion.currentUser
-import com.wisekrakr.wisemessenger.components.activity.actions.SearchActivity
+import com.wisekrakr.wisemessenger.components.activity.contact.SearchActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityProfileBinding
 import com.wisekrakr.wisemessenger.utils.Actions.ImageActions.loadImage
 import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
@@ -57,7 +52,7 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
      */
     private fun onEndingConversation(chatRoom: ChatRoom) {
         launch {
-            TaskManager.onEndingConversation(chatRoom, this@ProfileActivity) {
+            ApiManager.onEndingConversation(chatRoom, this@ProfileActivity) {
                 toggleButtons(true)
             }
         }
@@ -72,26 +67,28 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
      */
     private fun onSendRequest(requestType: RequestType) {
         launch {
-            TaskManager.Profiles.onGetAllContactsOfCurrentUser {
+            ApiManager.Profiles.onGetAllContactsOfCurrentUser {
                 Log.d(ACTIVITY_TAG, "SENDING REQUEST $it")
                 if (currentUserUid != it || it.isBlank()) {
-                    TaskManager.Requests.onSaveChatRequest(
+                    ApiManager.Requests.onSaveChatRequest(
                         userProfile.uid,
                         userProfile.username,
                         currentUserUid,
                         currentUser!!.username,
-                        requestType
-                    ) {
-                        if (requestType == RequestType.SENT) {
-                            toggleButtons(false)
+                        requestType,{
+                            if (requestType == RequestType.SENT) {
+                                toggleButtons(false)
 
-                            makeToast("Successfully requested chat!")
-                        } else if (requestType == RequestType.CANCELLED) {
-                            toggleButtons(true)
+                                makeToast("Successfully requested chat!")
+                            } else if (requestType == RequestType.CANCELLED) {
+                                toggleButtons(true)
 
-                            makeToast("Successfully cancelled request!")
+                                makeToast("Successfully cancelled request!")
+                            }
+                        },{
+                            makeToast("Failed to sent request")
                         }
-                    }
+                    )
                 }
             }
         }
@@ -113,19 +110,11 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
      */
     private fun hasSentRequest() {
         launch {
-            getChatRequestsForCurrentUser(currentUserUid)
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        if (snapshot.hasChild(userProfile.uid)) {
-                            toggleButtons(false)
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        Log.d(ACTIVITY_TAG,
-                            "Error in getting chat requests for user ${error.message}")
-                    }
-                })
+            ApiManager.Requests.onGetAllChatRequestForUser(
+                currentUserUid,
+                userProfile.uid,
+                toggleButtons(false)
+            )
         }
     }
 
@@ -136,33 +125,18 @@ class ProfileActivity : BaseActivity<ActivityProfileBinding>() {
      */
     private fun isAlreadyInContact() {
         launch {
-            TaskManager.Profiles.onGetUserProfileChatRooms(userProfile.uid) {
+            ApiManager.Profiles.onGetUserChatRooms(userProfile.uid) {
+                ApiManager.Rooms.onGetChatRoom(
+                    it,
+                    userProfile.uid,
+                    toggleButtons(false)
+                ) {chatRoom->
+                    binding.btnCancelRequestProfile.text = "End Conversation"
 
-                getChatRoom(it).addListenerForSingleValueEvent(
-                    object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            val chatRoom = snapshot.getValue(ChatRoom::class.java)
-
-                            chatRoom?.participants?.forEach { conversationalist ->
-
-                                if (conversationalist.uid == userProfile.uid) {
-
-                                    toggleButtons(false)
-                                    binding.btnCancelRequestProfile.text = "End Conversation"
-
-                                    binding.btnCancelRequestProfile.setOnClickListener {
-                                        onEndingConversation(chatRoom)
-                                    }
-                                }
-                            }
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            Log.d(ACTIVITY_TAG,
-                                "Error in getting chat room for user ${error.message}")
-                        }
+                    binding.btnCancelRequestProfile.setOnClickListener {
+                        onEndingConversation(chatRoom)
                     }
-                )
+                }
             }
         }
     }

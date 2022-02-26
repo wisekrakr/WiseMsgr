@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.widget.EditText
 import com.google.firebase.messaging.FirebaseMessaging
-import com.wisekrakr.wisemessenger.api.repository.UserRepository.putDeviceTokenOnUser
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
 import com.wisekrakr.wisemessenger.components.activity.BaseActivity
 import com.wisekrakr.wisemessenger.components.activity.HomeActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityLoginBinding
@@ -22,8 +22,8 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
     private lateinit var signInPassword: String
     private lateinit var signInInputsArray: Array<EditText>
 
-    override val bindingInflater: (LayoutInflater) -> ActivityLoginBinding
-        = ActivityLoginBinding::inflate
+    override val bindingInflater: (LayoutInflater) -> ActivityLoginBinding =
+        ActivityLoginBinding::inflate
 
     override fun setup() {
         signInInputsArray = arrayOf(binding.emailEditTextLogin, binding.passwordEditTextLogin)
@@ -62,14 +62,15 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>() {
                     val currentUserUid = firebaseAuth.currentUser!!.uid
                     val deviceToken = FirebaseMessaging.getInstance().token
 
-                    putDeviceTokenOnUser(currentUserUid, deviceToken.toString())
-                        .addOnCompleteListener {
+                    ApiManager.CurrentUser.onPutDeviceTokenOnUser(
+                        currentUserUid, deviceToken.toString(),
+                        {
                             startActivity(Intent(this, HomeActivity::class.java))
                             finish()
-                        }.addOnFailureListener {
-                            makeToast("Failed setting Device Token for user: ${it.message}")
+                        }, {
+                            makeToast("Failed setting Device Token for user")
                         }
-
+                    )
                 }
                 .addOnFailureListener {
                     makeToast("Failed to Authenticate: ${it.message}")

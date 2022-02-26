@@ -1,27 +1,20 @@
 package com.wisekrakr.wisemessenger.components.activity
 
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
 import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.api.adapter.TabsAccessorAdapter
 import com.wisekrakr.wisemessenger.api.model.User
-import com.wisekrakr.wisemessenger.api.repository.UserProfileRepository
-import com.wisekrakr.wisemessenger.api.repository.UserRepository.getCurrentUser
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
 import com.wisekrakr.wisemessenger.components.activity.profile.ProfileSettingsActivity
 import com.wisekrakr.wisemessenger.databinding.ActivityHomeBinding
-import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.firebaseAuth
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils.updateFirebaseUser
 import com.wisekrakr.wisemessenger.utils.Actions.IntentActions.returnToActivityWithFlags
-import com.wisekrakr.wisemessenger.utils.Extensions.ACTIVITY_TAG
 import com.wisekrakr.wisemessenger.utils.Extensions.makeToast
 import kotlinx.coroutines.launch
 import java.util.*
@@ -53,38 +46,31 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
     private fun getCurrentUser(user: FirebaseUser) {
         launch {
-            this.let {
-                getCurrentUser(user.uid).addListenerForSingleValueEvent(object :
-                    ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        currentUser = snapshot.getValue(User::class.java)
 
-                        if (currentUser != null) {
-                            updateFirebaseUser(currentUser!!.username)
-                            makeToast("Welcome back ${currentUser!!.username}")
+            ApiManager.CurrentUser.onGetUser(
+                user.uid
+            ) {
+                currentUser = it
 
-                            if (currentUser!!.profileUid.isBlank()) {
-                                val username = intent.getStringExtra("username")
+                updateFirebaseUser(currentUser!!.username)
+                makeToast("Welcome back ${currentUser!!.username}")
 
-                                val i = Intent(this@HomeActivity,
-                                    ProfileSettingsActivity::class.java)
+                if (currentUser!!.profileUid.isBlank()) {
+                    val username = intent.getStringExtra("username")
 
-                                i.putExtra("username", username)
+                    val i = Intent(this@HomeActivity,
+                        ProfileSettingsActivity::class.java)
 
-                                startActivity(i)
-                                finish()
-                            }
+                    i.putExtra("username", username)
 
-                            binding.tvNameHome.text = currentUser!!.username
-                        }
+                    startActivity(i)
+                    finish()
+                }
 
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        Log.e(ACTIVITY_TAG, error.message)
-                    }
-                })
+                binding.tvNameHome.text = currentUser!!.username
             }
+
+
         }
     }
 
@@ -127,9 +113,6 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
     override fun onDestroy() {
         super.onDestroy()
 
-        UserProfileRepository.updateUserConnectivityStatus(
-            firebaseAuth.currentUser?.uid.toString(),
-            "Offline"
-        )
+        ApiManager.Profiles.onUpdateUserConnectivityStatus("Offline")
     }
 }

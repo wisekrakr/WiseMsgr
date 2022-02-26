@@ -11,7 +11,7 @@ import com.wisekrakr.wisemessenger.R
 import com.wisekrakr.wisemessenger.api.adapter.ChatMessageAdapter
 import com.wisekrakr.wisemessenger.api.model.ChatMessage
 import com.wisekrakr.wisemessenger.api.model.ChatRoom
-import com.wisekrakr.wisemessenger.appservice.tasks.TaskManager
+import com.wisekrakr.wisemessenger.appservice.tasks.ApiManager
 import com.wisekrakr.wisemessenger.components.custom.CustomDialog
 import com.wisekrakr.wisemessenger.firebase.FirebaseUtils
 import com.wisekrakr.wisemessenger.utils.Extensions.TAG
@@ -43,7 +43,7 @@ object ChatMessageUtils {
                 val close = dialog.findViewById<Button>(R.id.dialog_close_btn)
 
                 remove.setOnClickListener {
-                    TaskManager.Messages.onRemovingChatMessage(chatMessage, chatRoom, context)
+                    ApiManager.Messages.onRemovingChatMessage(chatMessage, chatRoom, context)
                     onShowMessages()
                 }
 
